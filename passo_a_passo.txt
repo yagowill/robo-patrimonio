@@ -1,0 +1,10 @@
+Point(x=478, y=250)
+clica e escreve o n de rp
+Point(x=1235, y=269)
+clica e pesquisa e espera
+Point(x=1317, y=392)
+botao de edicao
+Point(x=481, y=247)
+edita o rp adicionando a letra e
+rola para baixo -10
+Point(x=233, y=552)

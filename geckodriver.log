@@ -1,0 +1,235 @@
+1681747962859	geckodriver	INFO	Listening on 127.0.0.1:36125
+1681747962979	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "39615" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilemBRMVG"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681747964723	Marionette	INFO	Marionette enabled
+1681747964742	Marionette	INFO	Listening on port 37561
+Read port: 37561
+WebDriver BiDi listening on ws://127.0.0.1:39615
+1681747965111	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilemBRMVG/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:39615/devtools/browser/6bf7b1bf-ba0e-46e4-9ee6-b71b75d43678
+JavaScript error: resource://gre/modules/URIFixup.sys.mjs, line 302: NS_ERROR_FAILURE: Should pass a non-null uri
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+SourceActor threw an exception: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.
+Stack: onResponse@resource://devtools/shared/DevToolsUtils.js:557:16
+onStopRequest@resource://gre/modules/NetUtil.jsm:126:18
+Line: 557, column: 16
+console.error: (new Error("Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.", "resource://devtools/shared/DevToolsUtils.js", 557))
+JavaScript error: resource://devtools/shared/DevToolsUtils.js, line 557: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+SourceActor threw an exception: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.
+Stack: onResponse@resource://devtools/shared/DevToolsUtils.js:557:16
+onStopRequest@resource://gre/modules/NetUtil.jsm:126:18
+Line: 557, column: 16
+console.error: (new Error("Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.", "resource://devtools/shared/DevToolsUtils.js", 557))
+JavaScript error: resource://devtools/shared/DevToolsUtils.js, line 557: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1663. Code 2152924148.
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+1681748152746	Marionette	INFO	Stopped listening on port 37561
+1681748167020	geckodriver	INFO	Listening on 127.0.0.1:57021
+1681748167099	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "37341" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilelbk9AM"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681748169018	Marionette	INFO	Marionette enabled
+1681748169031	Marionette	INFO	Listening on port 44317
+Read port: 44317
+WebDriver BiDi listening on ws://127.0.0.1:37341
+1681748169373	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilelbk9AM/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37341/devtools/browser/cdab0b4d-f4dc-4354-be85-7cb464269c79
+JavaScript error: resource://gre/modules/URIFixup.sys.mjs, line 302: NS_ERROR_FAILURE: Should pass a non-null uri
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+SourceActor threw an exception: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1674. Code 2152924148.
+Stack: onResponse@resource://devtools/shared/DevToolsUtils.js:557:16
+onStopRequest@resource://gre/modules/NetUtil.jsm:126:18
+Line: 557, column: 16
+console.error: (new Error("Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1674. Code 2152924148.", "resource://devtools/shared/DevToolsUtils.js", 557))
+JavaScript error: resource://devtools/shared/DevToolsUtils.js, line 557: Error: Failed to fetch https://www.sistemas.pa.gov.br/sispat/seguranca/principal/principal.seam?cid=1674. Code 2152924148.
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+1681748282566	Marionette	INFO	Stopped listening on port 44317
+1681748286386	geckodriver	INFO	Listening on 127.0.0.1:34841
+1681748286454	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "39085" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileB3b0gW"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681748288256	Marionette	INFO	Marionette enabled
+1681748288273	Marionette	INFO	Listening on port 34761
+Read port: 34761
+WebDriver BiDi listening on ws://127.0.0.1:39085
+1681748288662	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileB3b0gW/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:39085/devtools/browser/7d5ee1b3-9777-40ce-a8cd-230442d15035
+JavaScript error: resource://gre/modules/URIFixup.sys.mjs, line 302: NS_ERROR_FAILURE: Should pass a non-null uri
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+1681748385026	Marionette	INFO	Stopped listening on port 34761
+1681749097631	geckodriver	INFO	Listening on 127.0.0.1:60297
+1681749097701	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "39315" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilexKuo5o"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681749098812	Marionette	INFO	Marionette enabled
+1681749098819	Marionette	INFO	Listening on port 32885
+Read port: 32885
+WebDriver BiDi listening on ws://127.0.0.1:39315
+1681749099029	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilexKuo5o/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:39315/devtools/browser/f47fa289-f229-4fa6-ac3c-3d93092bdbf2
+JavaScript error: resource://gre/modules/URIFixup.sys.mjs, line 302: NS_ERROR_FAILURE: Should pass a non-null uri
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+1681749270074	geckodriver	INFO	Listening on 127.0.0.1:43303
+1681749270145	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "56919" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofile04W8xe"
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681749271317	Marionette	INFO	Marionette enabled
+1681749271324	Marionette	INFO	Listening on port 41007
+Read port: 41007
+WebDriver BiDi listening on ws://127.0.0.1:56919
+1681749271520	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile04W8xe/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56919/devtools/browser/cc12034e-26d7-4c77-b267-26c58e70fd4e
+JavaScript error: resource://gre/modules/URIFixup.sys.mjs, line 302: NS_ERROR_FAILURE: Should pass a non-null uri
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+1681749324890	Marionette	INFO	Stopped listening on port 41007
+WARNING: A blocker encountered an error while we were waiting.
+          Blocker:  Waiting for ping task
+          Phase: TelemetryController: Waiting for pending ping activity
+          State: (none)
+WARNING: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+WARNING: addBlocker@resource://gre/modules/AsyncShutdown.jsm:703:15
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:511:26
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:450:15
+setupShutdown@resource://gre/modules/osfile/osfile_async_front.jsm:1563:28
+@resource://gre/modules/osfile/osfile_async_front.jsm:1583:16
+@resource://gre/modules/osfile.jsm:12:30
+@resource://gre/modules/TelemetryStorage.jsm:19:28
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:103:5
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:63:33
+_submitPingLogic@resource://gre/modules/TelemetryControllerParent.jsm:540:48
+send@resource://gre/modules/TelemetryControllerParent.jsm:628:24
+submitExternalPing@resource://gre/modules/TelemetryControllerParent.jsm:182:17
+sendPing@resource://gre/modules/EventPing.jsm:51:30
+_submitPing@resource://gre/modules/EventPing.jsm:229:12
+shutdown@resource://gre/modules/EventPing.jsm:112:10
+_cleanupOnShutdown@resource://gre/modules/TelemetryControllerParent.jsm:940:31
+shutdown/<@resource://gre/modules/TelemetryControllerParent.jsm:1010:24
+observe@resource://gre/modules/AsyncShutdown.jsm:560:16
+
+WARNING: A blocker encountered an error while we were waiting.
+          Blocker:  Waiting for ping task
+          Phase: TelemetryController: Waiting for pending ping activity
+          State: (none)
+WARNING: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+WARNING: addBlocker@resource://gre/modules/AsyncShutdown.jsm:703:15
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:511:26
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:450:15
+setupShutdown@resource://gre/modules/osfile/osfile_async_front.jsm:1563:28
+@resource://gre/modules/osfile/osfile_async_front.jsm:1583:16
+@resource://gre/modules/osfile.jsm:12:30
+@resource://gre/modules/TelemetryStorage.jsm:19:28
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:103:5
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:63:33
+_submitPingLogic@resource://gre/modules/TelemetryControllerParent.jsm:540:48
+send@resource://gre/modules/TelemetryControllerParent.jsm:628:24
+submitExternalPing@resource://gre/modules/TelemetryControllerParent.jsm:182:17
+saveShutdownPings@resource://gre/modules/TelemetrySession.jsm:982:34
+shutdownChromeProcess/cleanup/<@resource://gre/modules/TelemetrySession.jsm:1232:20
+cleanup@resource://gre/modules/TelemetrySession.jsm:1239:9
+shutdownChromeProcess@resource://gre/modules/TelemetrySession.jsm:1256:14
+shutdown@resource://gre/modules/TelemetrySession.jsm:247:17
+_cleanupOnShutdown@resource://gre/modules/TelemetryControllerParent.jsm:959:35
+observe@resource://gre/modules/AsyncShutdown.jsm:560:16
+
+WARNING: A blocker encountered an error while we were waiting.
+          Blocker:  Waiting for ping task
+          Phase: TelemetryController: Waiting for pending ping activity
+          State: (none)
+WARNING: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+WARNING: addBlocker@resource://gre/modules/AsyncShutdown.jsm:703:15
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:511:26
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:450:15
+setupShutdown@resource://gre/modules/osfile/osfile_async_front.jsm:1563:28
+@resource://gre/modules/osfile/osfile_async_front.jsm:1583:16
+@resource://gre/modules/osfile.jsm:12:30
+@resource://gre/modules/TelemetryStorage.jsm:19:28
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:103:5
+promiseArchivePing@resource://gre/modules/TelemetryArchive.jsm:63:33
+_submitPingLogic@resource://gre/modules/TelemetryControllerParent.jsm:540:48
+send@resource://gre/modules/TelemetryControllerParent.jsm:628:24
+submitExternalPing@resource://gre/modules/TelemetryControllerParent.jsm:182:17
+saveShutdownPings@resource://gre/modules/TelemetrySession.jsm:1014:36
+shutdownChromeProcess/cleanup/<@resource://gre/modules/TelemetrySession.jsm:1232:20
+cleanup@resource://gre/modules/TelemetrySession.jsm:1239:9
+shutdownChromeProcess@resource://gre/modules/TelemetrySession.jsm:1256:14
+shutdown@resource://gre/modules/TelemetrySession.jsm:247:17
+_cleanupOnShutdown@resource://gre/modules/TelemetryControllerParent.jsm:959:35
+observe@resource://gre/modules/AsyncShutdown.jsm:560:16
+
+WARNING: A blocker encountered an error while we were waiting.
+          Blocker:  TelemetryController: shutting down
+          Phase: profile-before-change-telemetry
+          State: Error getting state: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange" at addBlocker@resource://gre/modules/AsyncShutdown.jsm:703:15
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:511:26
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:450:15
+setupShutdown@resource://gre/modules/osfile/osfile_async_front.jsm:1563:28
+@resource://gre/modules/osfile/osfile_async_front.jsm:1583:16
+@resource://gre/modules/osfile.jsm:12:30
+@resource://gre/modules/TelemetryStorage.jsm:19:28
+getShutdownState@resource://gre/modules/TelemetrySend.jsm:1687:7
+getShutdownState@resource://gre/modules/TelemetrySend.jsm:369:30
+_getState@resource://gre/modules/TelemetryControllerParent.jsm:1058:38
+setupTelemetry/<@resource://gre/modules/TelemetryControllerParent.jsm:917:18
+safeGetState@resource://gre/modules/AsyncShutdown.jsm:242:17
+Barrier/addBlocker/promise<@resource://gre/modules/AsyncShutdown.jsm:751:20
+observe@resource://gre/modules/AsyncShutdown.jsm:560:16
+
+WARNING: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+WARNING: addBlocker@resource://gre/modules/AsyncShutdown.jsm:703:15
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:511:26
+addBlocker@resource://gre/modules/AsyncShutdown.jsm:450:15
+setupShutdown@resource://gre/modules/osfile/osfile_async_front.jsm:1563:28
+@resource://gre/modules/osfile/osfile_async_front.jsm:1583:16
+@resource://gre/modules/osfile.jsm:12:30
+@resource://gre/modules/TelemetryStorage.jsm:19:28
+removeAbortedSessionPing@resource://gre/modules/TelemetryControllerParent.jsm:721:5
+removeAbortedSessionPing@resource://gre/modules/TelemetryControllerParent.jsm:249:17
+shutdownChromeProcess/cleanup/<@resource://gre/modules/TelemetrySession.jsm:1235:42
+observe@resource://gre/modules/AsyncShutdown.jsm:560:16
+
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 703: Error: Phase "profile-before-change" is finished, it is too late to register completion condition "OS.File: flush I/O queued before profileBeforeChange"
+1681749340672	Marionette	INFO	Stopped listening on port 32885

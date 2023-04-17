@@ -1,3 +1,3 @@
 import pyautogui as pg
 
-print(pg.position())
+pg.mouseInfo()

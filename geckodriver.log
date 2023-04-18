@@ -3348,3 +3348,33 @@ console.warn: SearchSettings: "get: No settings file exists, new profile?" (new 
 DevTools listening on ws://127.0.0.1:45771/devtools/browser/c69a0005-99ec-49a6-bb58-8013b3627b63
 1681808661531	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'uninitialized'.
 1681808768761	Marionette	INFO	Stopped listening on port 34947
+1681808861649	Marionette	INFO	Stopped listening on port 41395
+1681808980680	geckodriver	INFO	Listening on 127.0.0.1:40925
+1681808980750	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "59709" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileIHnvFR"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+[GFX1-]: glxtest: VA-API test failed: failed to initialise VAAPI connection.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1681808983275	Marionette	INFO	Marionette enabled
+1681808983282	Marionette	INFO	Listening on port 38771
+Read port: 38771
+WebDriver BiDi listening on ws://127.0.0.1:59709
+1681808983575	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileIHnvFR/search.json.mozlz4", (void 0)))
+[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
+DevTools listening on ws://127.0.0.1:59709/devtools/browser/2c4d3314-afe6-486d-897c-ab44eb7c3aca
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.sistemas.pa.gov.br."
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/ajax4jsf/framework.pack.js, line 5514: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Final/org/richfaces/ui.pack.js, line 12786: unreachable code after return statement
+JavaScript warning: https://www.sistemas.pa.gov.br/sispat/a4j/g/3_3_3.Finalorg/richfaces/renderkit/html/scripts/jquery/jquery.js, line 246: unreachable code after return statement

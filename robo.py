@@ -1,10 +1,6 @@
-import datetime
-from time import sleep
 from functions import *
 
-
-acessar_governo_digital()
-efetuar_login()
 acessar_sispat()
-acessar_entrada_por_transferencia()
-incorporar()
+acessar_entrada_por_transferência_nao_incorporado()
+#acessar_entrada_por_transferencia()
+#incorporar()

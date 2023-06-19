@@ -100,15 +100,15 @@ class Sistema:
                 input_rp = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')))
                 input_rp.send_keys("")
                 ActionChains(self.navegador).send_keys(Keys.TAB).send_keys(Keys.ENTER).perform()
-                # confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
-                # assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
+                confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+                assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 
-                # timestamp = time.now()
-                # print(f"\33[1;96m{timestamp}\33[1;37m - Patrimonio: \33[1;35m{rp}\33[92m OK\33[1;37m - Progresso: \33[1;96m{cadastrados}/{total}\33[m\n")
-                # row_rp[0].value = ''
+                timestamp = time.now()
+                print(f"\33[1;96m{timestamp}\33[1;37m - Patrimonio: \33[1;35m{rp}\33[92m OK\33[1;37m - Progresso: \33[1;96m{cadastrados}/{total}\33[m\n")
+                row_rp[0].value = ''
                 
-                # wb_incorporados.save('incorporados.xlsx')
-                # wb_patrimonio.save('patrimonios.xlsx')
+                wb_incorporados.save('incorporados.xlsx')
+                wb_patrimonio.save('patrimonios.xlsx')
                     
 
 if __name__ == '__main__':

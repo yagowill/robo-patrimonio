@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ActionChains, Keys
 from datetime import datetime as time
 from openpyxl import load_workbook
 from time import sleep
@@ -26,6 +27,7 @@ class Sistema:
             self.navegador.find_element(By.ID, "form_login:login_username").send_keys(self.usuario)
             self.navegador.find_element(By.ID, "form_login:login_password").send_keys(self.senha)
             self.navegador.find_element(By.ID, "form_login:button_login").click()
+            WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')))
             self.navegador.get('https://www.sistemas.pa.gov.br/sispat')
         
     def acessar_dist_nao_recebido(self):
@@ -69,15 +71,13 @@ class Sistema:
         incorporados = wb_incorporados.active
         
         total = 0
-        rps_total = patrimonio.values
-
-        for row in rps_total:   
+        for row in patrimonio.values:   
             if(row[0] != None):
                 total += 1  
         
-        cells_preenchidas = 0
         cells = incorporados.values
 
+        cells_preenchidas = 0
         for row in cells:
             if(row[0] != None):
                 cells_preenchidas += 1
@@ -87,28 +87,32 @@ class Sistema:
         
         rps_para_incorporar = patrimonio[1:total]
         rps_incorporados = incorporados[cells_preenchidas:cells_preenchidas+total]
+        
         for row_rp, row_incorporado in zip(rps_para_incorporar, rps_incorporados):
             rp = row_rp.value
             if (rp != None):
                 row_incorporado[0].value = rp
                 cadastrados += 1
+                
                 cadastrar = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')))
                 cadastrar.click()
+                
                 input_rp = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')))
                 input_rp.send_keys("")
-                incorporar_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[1]')))
-                incorporar_btn.click()
-                confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
-                #assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
-                timestamp = time.now()
-                print(f"\33[1;96m{timestamp}\33[1;37m - Patrimonio: \33[1;35m{rp}\33[92m OK\33[1;37m - Progresso: \33[1;96m{cadastrados}/{total}\33[m\n")
-                row_rp[0].value = ''
-                wb_incorporados.save('incorporados.xlsx')
-                wb_patrimonio.save('patrimonios.xlsx')
+                ActionChains(self.navegador).send_keys(Keys.TAB).send_keys(Keys.ENTER).perform()
+                # confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+                # assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
+                
+                # timestamp = time.now()
+                # print(f"\33[1;96m{timestamp}\33[1;37m - Patrimonio: \33[1;35m{rp}\33[92m OK\33[1;37m - Progresso: \33[1;96m{cadastrados}/{total}\33[m\n")
+                # row_rp[0].value = ''
+                
+                # wb_incorporados.save('incorporados.xlsx')
+                # wb_patrimonio.save('patrimonios.xlsx')
                     
 
 if __name__ == '__main__':
-    sispat = Sistema()
+    sispat = Sistema('yago.martins', '7366yawi')
     sispat.login()
-    sispat.incorporar('ventilador')
+    sispat.incorporar()
     

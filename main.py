@@ -1,4 +1,3 @@
-from getpass import getpass
 import json
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
@@ -111,7 +110,7 @@ class Sistema:
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-                print(f'\033[1;36m{timestamp}\033[39m - Patrimonio: \033[35m[{rp}]\033[39m \033[1;32mIncorporado\033[39m - Progresso: \033[33m{cadastrados}/{total}\033[0m\n')
+                print(f'\n\033[1;36m{timestamp}\033[39m - Patrimonio: \033[34m[{rp}]\033[39m \033[1;32mIncorporado {cadastrados}/{total}\033[0m')
                 row_rp[0].value = ''
 
                 wb_incorporados.save('incorporados.xlsx')
@@ -121,5 +120,4 @@ class Sistema:
 if __name__ == '__main__':
     sispat = Sistema()
     sispat.login()
-    sispat.receber()
-    
+    sispat.incorporar('')

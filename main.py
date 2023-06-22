@@ -1,4 +1,5 @@
 from getpass import getpass
+import json
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,12 +9,14 @@ from selenium.webdriver import ActionChains, Keys
 from datetime import datetime as time
 from openpyxl import load_workbook
 from time import sleep
-import itertools
+import re
 
 class Sistema:
-    def __init__(self, usuario = input('usuario: '), senha = getpass('senha: '), estado_janela=''):
-        self.usuario = usuario
-        self.senha = senha
+    def __init__(self,estado_janela=''):
+        with open("login.json") as file:
+            login = json.load(file)
+        self.usuario = login["usuario"]
+        self.senha = login["senha"]
         self.service = Service(executable_path="./chromedriver.exe")
         self.navegador = webdriver.Chrome(service=self.service)
         if (estado_janela == 'min'):
@@ -41,11 +44,15 @@ class Sistema:
             transferencia_nao_recebida_btn.click()
             calendario_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')))
             calendario_btn.click()
-            data_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[4]/td[4]')))
+            data_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')))
             data_btn.click()
             receber = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')))
             receber.click()
-            WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')))
+            confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+            assert re.search("recebido com sucesso.",confirmacao.text) != None
+            timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
+            print(f'\033[1;36m{timestamp}\033[39m \033[1;32m{confirmacao.text}\033[0m')
+            
         
     def acessar_entrada_por_transferência_nao_incorporado(self):
         entrada_por_transferência_nao_incorporado = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')))
@@ -103,16 +110,16 @@ class Sistema:
                 confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 
-                timestamp = time.now()
-                print(f"{timestamp} - Patrimonio: {rp} Incorporado - Progresso: {cadastrados}/{total}\n")
+                timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
+                print(f'\033[1;36m{timestamp}\033[39m - Patrimonio: \033[35m[{rp}]\033[39m \033[1;32mIncorporado\033[39m - Progresso: \033[33m{cadastrados}/{total}\033[0m\n')
                 row_rp[0].value = ''
-                
+
                 wb_incorporados.save('incorporados.xlsx')
                 wb_patrimonio.save('patrimonios.xlsx')
                     
 
 if __name__ == '__main__':
-    sispat = Sistema('yago.martins', '7366yawi')
+    sispat = Sistema()
     sispat.login()
-    sispat.incorporar('beliche')
+    sispat.receber()
     

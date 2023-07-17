@@ -5,7 +5,7 @@ from robo import Sistema
 
 rps_value = []
 
-lst = sg.Listbox(values=[''], size=(75,20), enable_events=True, k='-LIST-')
+lst = sg.Listbox(values=[''], size=(75,20), enable_events=True, select_mode='extended', k='-LIST-')
 
 incorporar = [sg.Frame('Incorporar',[
     [sg.Text('Órgão Origem:', size=(15,1)), sg.Combo(orgaos, default_value=orgaos[0], size=(55,1), readonly=True, enable_events=True, k='-ORGAO-')],
@@ -73,10 +73,11 @@ while True:
         
     elif event == 'Remover':
         if lst.get() != []:
-            val = lst.get()[0]
-            rps_value.remove(val)
-            window['-LIST-'].update(rps_value)
-            window['-ADICIONADOS-'].update(f'{len(rps_value)} rps adicionados')
+            val = lst.get()
+            for i in val:
+                rps_value.remove(i)
+                window['-LIST-'].update(rps_value)
+                window['-ADICIONADOS-'].update(f'{len(rps_value)} rps adicionados')
             
     elif event == 'Incorporar':
         sispat = Sistema(headless=values['-HEADLESS-'])

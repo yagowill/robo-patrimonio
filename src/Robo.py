@@ -33,20 +33,20 @@ class Robo:
         if(self.usuario == '' or self.senha == '' ):
             print('Usuário e senha não definidos')
         else:
-            sg.Print("Acessando o Governo Digital...")
+            # sg.Print("Acessando o Governo Digital...")
             self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-            sg.Print("Efetuando o login...")
+            # sg.Print("Efetuando o login...")
             self.navegador.find_element(By.ID, "form_login:login_username").send_keys(self.usuario)
             self.navegador.find_element(By.ID, "form_login:login_password").send_keys(self.senha)
             self.navegador.find_element(By.ID, "form_login:button_login").click()
             WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')))
-            sg.Print("Login efetuado com sucesso!", text_color='green')
+            # sg.Print("Login efetuado com sucesso!", text_color='green')
             self.navegador.get('https://www.sistemas.pa.gov.br/sispat')
-            sg.Print("Acessando o SispatWeb...")
+            # sg.Print("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
         dist_nao_recebido = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_pendencias:list:1:pendencia_17"]')))
-        sg.Print('Acessando distribuídos não recebidos...')
+        # sg.Print('Acessando distribuídos não recebidos...')
         dist_nao_recebido.click()
     
     def receber(self):
@@ -63,14 +63,14 @@ class Robo:
             confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
             assert re.search("recebido com sucesso.",confirmacao.text) != None
             timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-            sg.Print(f'{timestamp} {confirmacao.text}')
+            # sg.Print(f'{timestamp} {confirmacao.text}')
         self.navegador.quit()
             
         
     def acessar_entrada_por_transferência_nao_incorporado(self):
         entrada_por_transferência_nao_incorporado = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')))
         
-        sg.Print("Acessando entrada por tranferência não incorporados...")
+        # sg.Print("Acessando entrada por tranferência não incorporados...")
         
         entrada_por_transferência_nao_incorporado.click()
         
@@ -99,7 +99,7 @@ class Robo:
         pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
         
-        sg.Print("pesquisando...")
+        # sg.Print("pesquisando...")
         
         sleep(5)
         
@@ -124,13 +124,13 @@ class Robo:
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                sg.Print(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+                # sg.Print(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
                 log.write(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}\n')
                 log.close()
             except:
                 aviso = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')))
                 
-                sg.Print(aviso.text, text_color='red')
+                # sg.Print(aviso.text, text_color='red')
                 log.write(aviso.text)
                 self.navegador.close()
                 self.navegador.quit()
@@ -138,6 +138,54 @@ class Robo:
         self.navegador.close()
         self.navegador.quit()
         
+    def pegar_dados_pistola(self):
+        origem = 'FISP - FUNDO DE INVESTIMENTO EM SEGURANÇA PÚBLICA'
+        ntermo = '2023/30'
+        total = 997
+            
+        self.acessar_entrada_por_transferência_nao_incorporado()
+        
+        orgao_origem_selection = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')))
+        orgao_origem_selection.click()
+        
+        origem_option =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'//option[contains(text(),"{origem}")]')))
+        origem_option.click()
+        
+        n_termo = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')))
+        n_termo.send_keys(ntermo)
+        
+        pesquisar = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')))
+        pesquisar.click()
+        
+        sleep(5)
+        anterior = ''
+        numero_serie_pistola = open('numeros de serie pistolas.csv', 'a')
+        for j in range(1,101):
+            lista_resultado = self.navegador.find_elements(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:tb"]/tr')
+            tamanho_lista = len(lista_resultado)
+            for i in range(1, (tamanho_lista+1)):
+                lupa = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[{i}]/td[7]/a')))
+                self.navegador.execute_script("arguments[0].click();", lupa)
+                nserie = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')))
+                sleep(1)
+                nserie = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')))
+                print(nserie.text)
+                numero_serie_pistola.write(nserie.text + '\n')
+                anterior = nserie.text
+                fechar_modal = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/div/img')))
+                self.navegador.execute_script("arguments[0].click();", fechar_modal)
+                sleep(0.5)
+            
+                
+            avançar =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_lista:paginador_table"]/tbody/tr/td[15]')))
+            self.navegador.execute_script("arguments[0].click();", avançar)
+            
+        numero_serie_pistola.close()
+        self.navegador.quit()
+        
+        
+        
+    
     def incorporar(self, origem, ntermo, descricao, patrimonios):
         rps = patrimonios
         cadastrados = 0  
@@ -161,7 +209,7 @@ class Robo:
         pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
         
-        sg.Print("pesquisando...")
+        # sg.Print("pesquisando...")
         
         sleep(5)
         for rp in rps:
@@ -179,10 +227,10 @@ class Robo:
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                sg.Print(f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+                # sg.Print(f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}')
             except:
                 aviso = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')))
-                sg.Print(aviso.text, text_color='red')
+                # sg.Print(aviso.text, text_color='red')
                 self.navegador.close()
                 self.navegador.quit()
                 
@@ -190,6 +238,7 @@ class Robo:
         self.navegador.quit()
 
 if __name__ == '__main__':
-    sispat = Robo(headless=False)
+    sispat = Robo(headless=True)
     sispat.login(tipo='operacional')
-    sispat.incorporar_pistolas()
+    sispat.pegar_dados_pistola()
+    

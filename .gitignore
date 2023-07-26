@@ -1,5 +1,4 @@
 *.xlsx
-*.exe
 *.json
 *.log
 __pycache__

@@ -225,12 +225,12 @@ class Interface_grafica:
                         janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                     
             elif event == 'Incorporar':
-                sispat = Robo(headless=values['-HEADLESS-'])
-                sispat.login('operacional')
+                sispat = Robo(headless=values['-HEADLESS-'], tipo='operacional', cli=False)
+                sispat.login()
                 sispat.incorporar(values['-ORGAO-'], values['-NTERMO-'], values['-DESCRICAO-'], self.rps_value)
                 
             elif event == 'Receber':
-                sispat = Robo(headless=values['-HEADLESS-'])
-                sispat.login('agente_responsavel')
+                sispat = Robo(headless=values['-HEADLESS-'], tipo='agente_responsavel', cli=False)
+                sispat.login()
                 sispat.receber()
         

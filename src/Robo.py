@@ -13,9 +13,14 @@ import re
 import PySimpleGUI as sg
 
 class Robo:
-    def __init__(self, headless):
+    def __init__(self, headless, tipo, cli):
         self.service = Service(executable_path="./chromedriver.exe")
         self.service.creation_flags = CREATE_NO_WINDOW
+        with open("src/login.json") as file:
+            login = json.load(file)
+        self.usuario = login[tipo]["usuario"]
+        self.senha = login[tipo]["senha"]
+        self.cli = cli
         if headless:
             options = Options()
             options.add_argument("--headless=new")
@@ -24,53 +29,61 @@ class Robo:
             self.navegador = webdriver.Chrome(service=self.service, options=options)
         else:
             self.navegador = webdriver.Chrome(service=self.service)
-    
-    def login(self,tipo):
-        with open("src/login.json") as file:
-            login = json.load(file)
-        self.usuario = login[tipo]["usuario"]
-        self.senha = login[tipo]["senha"]
-        if(self.usuario == '' or self.senha == '' ):
-            print('Usuário e senha não definidos')
+            
+    def espera_elemento(self, xpath):
+        return WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        
+    def mensagem(self, msg, text_color=None):
+        if self.cli:
+            print(msg)
         else:
-            # sg.Print("Acessando o Governo Digital...")
-            self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-            # sg.Print("Efetuando o login...")
-            self.navegador.find_element(By.ID, "form_login:login_username").send_keys(self.usuario)
-            self.navegador.find_element(By.ID, "form_login:login_password").send_keys(self.senha)
-            self.navegador.find_element(By.ID, "form_login:button_login").click()
-            WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')))
-            # sg.Print("Login efetuado com sucesso!", text_color='green')
-            self.navegador.get('https://www.sistemas.pa.gov.br/sispat')
-            # sg.Print("Acessando o SispatWeb...")
+            sg.Print(msg, text_color=text_color)
+            
+    def login(self):
+        self.mensagem("Acessando o Governo Digital...")
+        self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
+        self.mensagem("Efetuando o login...")
+        self.espera_elemento("//*[@id=form_login:login_username]").send_keys(self.usuario)
+        self.espera_elemento("//*[@id=form_login:login_password]").send_keys(self.senha)
+        self.espera_elemento("//*[@id=form_login:button_login]").click()
+        self.mensagem("Login efetuado com sucesso!")
+        
+    def acessar_sispatweb(self):
+        self.espera_elemento('//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')
+        self.navegador.get('https://www.sistemas.pa.gov.br/sispat')
+        self.mensagem("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
-        dist_nao_recebido = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_pendencias:list:1:pendencia_17"]')))
-        # sg.Print('Acessando distribuídos não recebidos...')
+        dist_nao_recebido = self.espera_elemento('//*[@id="form_pendencias:list:1:pendencia_17"]')
+        
+        self.mensagem('Acessando distribuídos não recebidos...')
+       
         dist_nao_recebido.click()
     
     def receber(self):
-        self.acessar_dist_nao_recebido()                
-        transferencia_nao_recebida_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')))
+        self.acessar_dist_nao_recebido()
+                        
+        transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
+        
         while transferencia_nao_recebida_btn:
             transferencia_nao_recebida_btn.click()
-            calendario_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')))
+            calendario_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')
             calendario_btn.click()
-            data_btn = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')))
+            data_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')
             data_btn.click()
-            receber = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')))
+            receber = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')
             receber.click()
-            confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+            confirmacao = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
             assert re.search("recebido com sucesso.",confirmacao.text) != None
             timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-            # sg.Print(f'{timestamp} {confirmacao.text}')
+            self.mensagem(f'{timestamp} {confirmacao.text}')
         self.navegador.quit()
             
         
     def acessar_entrada_por_transferência_nao_incorporado(self):
-        entrada_por_transferência_nao_incorporado = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')))
+        entrada_por_transferência_nao_incorporado = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')
         
-        # sg.Print("Acessando entrada por tranferência não incorporados...")
+        self.mensagem("Acessando entrada por tranferência não incorporados...")
         
         entrada_por_transferência_nao_incorporado.click()
         
@@ -80,57 +93,41 @@ class Robo:
         descricao = 'PISTOLA SEMIAUTOMATICA, OXIDADA, CALIBRE 9MM, P/ 15 TIROS'
         cadastrados = 0  
         total = 998
-            
         
         self.acessar_entrada_por_transferência_nao_incorporado()
         
-        orgao_origem_selection = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')))
-        orgao_origem_selection.click()
-        
-        origem_option =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'//option[contains(text(),"{origem}")]')))
-        origem_option.click()
-        
-        n_termo = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')))
-        n_termo.send_keys(ntermo)
-        
-        descricao_input = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:descricaomaterial"]')))
-        descricao_input.send_keys(descricao)
-        
-        pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
-        pesquisar.click()
-        
-        # sg.Print("pesquisando...")
+        self.filtrar(origem, ntermo, descricao)
         
         sleep(5)
         
-        resultado = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]')))
+        resultado = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]')
         
         
         while resultado:
-            incorporar_btn = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')))
+            incorporar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')
             incorporar_btn.click()
             
-            rp = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[8]/tbody/tr[4]/td[2]/span'))).text + '-'
+            rp = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[8]/tbody/tr[4]/td[2]/span').text + '-'
                        
-            input_rp = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')))
+            input_rp = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')
             input_rp.send_keys(rp)
             
             ActionChains(self.navegador).send_keys(Keys.TAB).send_keys(Keys.ENTER).perform()
             
-            confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+            confirmacao = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
             log = open('atividade.log', 'a')
             
             try:
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                # sg.Print(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+                self.mensagem(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
                 log.write(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}\n')
                 log.close()
             except:
-                aviso = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')))
+                aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
                 
-                # sg.Print(aviso.text, text_color='red')
+                self.mensagem(aviso.text, text_color='red')
                 log.write(aviso.text)
                 self.navegador.close()
                 self.navegador.quit()
@@ -145,100 +142,101 @@ class Robo:
             
         self.acessar_entrada_por_transferência_nao_incorporado()
         
-        orgao_origem_selection = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')))
+        orgao_origem_selection = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')
         orgao_origem_selection.click()
         
-        origem_option =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'//option[contains(text(),"{origem}")]')))
+        origem_option =  self.espera_elemento(f'//option[contains(text(),"{origem}")]')
         origem_option.click()
         
-        n_termo = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')))
+        n_termo = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')
         n_termo.send_keys(ntermo)
         
-        pesquisar = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')))
+        pesquisar = self.espera_elemento('//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
         
         sleep(5)
-        anterior = ''
         numero_serie_pistola = open('numeros de serie pistolas.csv', 'a')
         for j in range(1,101):
             lista_resultado = self.navegador.find_elements(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:tb"]/tr')
             tamanho_lista = len(lista_resultado)
             for i in range(1, (tamanho_lista+1)):
-                lupa = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[{i}]/td[7]/a')))
+                lupa = self.espera_elemento(f'/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[{i}]/td[7]/a')
                 self.navegador.execute_script("arguments[0].click();", lupa)
-                nserie = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')))
+                nserie = self.espera_elemento('//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')
                 sleep(1)
-                nserie = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')))
+                nserie = self.espera_elemento('//*[@id="j_id465_body"]/table[6]/tbody/tr[4]/td[2]/span')
                 print(nserie.text)
                 numero_serie_pistola.write(nserie.text + '\n')
-                anterior = nserie.text
-                fechar_modal = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/div/img')))
+                fechar_modal = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/div/img')
                 self.navegador.execute_script("arguments[0].click();", fechar_modal)
                 sleep(0.5)
             
                 
-            avançar =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_lista:paginador_table"]/tbody/tr/td[15]')))
+            avançar =  self.espera_elemento('//*[@id="incorporar_bem_destinado_ao_orgao_form_lista:paginador_table"]/tbody/tr/td[15]')
             self.navegador.execute_script("arguments[0].click();", avançar)
             
         numero_serie_pistola.close()
         self.navegador.quit()
         
         
-        
-    
-    def incorporar(self, origem, ntermo, descricao, patrimonios):
-        rps = patrimonios
-        cadastrados = 0  
-        total = len(rps)
-            
-        
-        self.acessar_entrada_por_transferência_nao_incorporado()
-        
-        orgao_origem_selection = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')))
+    def filtrar(self, origem, ntermo, descricao):
+        orgao_origem_selection = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')
         orgao_origem_selection.click()
         
-        origem_option =  WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, f'//option[contains(text(),"{origem}")]')))
+        origem_option =  self.espera_elemento(f'//option[contains(text(),"{origem}")]')
         origem_option.click()
         
-        n_termo = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')))
+        n_termo = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input')
         n_termo.send_keys(ntermo)
         
-        descricao_input = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:descricaomaterial"]')))
+        descricao_input = self.espera_elemento('//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:descricaomaterial"]')
         descricao_input.send_keys(descricao)
         
         pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
         
-        # sg.Print("pesquisando...")
+        self.mensagem("pesquisando...")
+            
+    
+    def incorporar(self, origem, ntermo, descricao, patrimonios):
+        rps = patrimonios
+        cadastrados = 0  
+        total = len(rps)
+                    
+        self.acessar_entrada_por_transferência_nao_incorporado()
         
+        self.filtrar(self, origem, ntermo, descricao)
         sleep(5)
         for rp in rps:
-            incorporar_btn = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')))
-            incorporar_btn.click()
+            selecionar_ben_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')
+            selecionar_ben_btn.click()
             
-            input_rp = WebDriverWait(self.navegador, timeout=30).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')))
+            input_rp = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')
             input_rp.send_keys(rp)
             
-            ActionChains(self.navegador).send_keys(Keys.TAB).send_keys(Keys.ENTER).perform()
+            confirmar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[1]')
+            self.navegador.execute_script("arguments[0].click();", confirmar_btn)
+            sleep(1)
             
-            confirmacao = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+            confirmacao = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
             
-            try:
-                assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
+            if confirmacao.text == "Bem foi incorporado ao órgão com sucesso.": 
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                # sg.Print(f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}')
-            except:
-                aviso = WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')))
-                # sg.Print(aviso.text, text_color='red')
-                self.navegador.close()
-                self.navegador.quit()
+                self.mensagem(f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+            else:
+                aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
+                self.mensagem(aviso.text, text_color='red')
+                cancelar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[2]')
+                self.navegador.execute_script("arguments[0].click();", cancelar_btn)
+                sleep(1)
+                self.filtrar(self, origem, ntermo, descricao)
+                sleep(5)
                 
         self.navegador.close()
         self.navegador.quit()
 
 if __name__ == '__main__':
-    sispat = Robo(headless=True)
-    sispat.login(tipo='operacional')
+    sispat = Robo(headless=True, tipo='operacional', cli=True)
+    sispat.login()
     sispat.pegar_dados_pistola()
-    

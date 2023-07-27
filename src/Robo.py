@@ -54,7 +54,7 @@ class Robo:
         self.mensagem("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
-        dist_nao_recebido = self.espera_elemento('//*[@id="form_pendencias:list:1:pendencia_17"]')
+        dist_nao_recebido = self.espera_elemento('//option[contains(text(),"Distribuído Não Recebido")]')
         
         self.mensagem('Acessando distribuídos não recebidos...')
        

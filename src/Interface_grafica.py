@@ -227,10 +227,11 @@ class Interface_grafica:
             elif event == 'Incorporar':
                 sispat = Robo(headless=values['-HEADLESS-'], tipo='operacional', cli=False)
                 sispat.login()
-                sispat.incorporar(values['-ORGAO-'], values['-NTERMO-'], values['-DESCRICAO-'], self.rps_value)
+                sispat.acessar_sispatweb()
+                sispat.incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value)
                 
             elif event == 'Receber':
                 sispat = Robo(headless=values['-HEADLESS-'], tipo='agente_responsavel', cli=False)
                 sispat.login()
+                sispat.acessar_sispatweb()
                 sispat.receber()
-        

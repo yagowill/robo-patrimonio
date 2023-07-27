@@ -1,16 +1,16 @@
-import json
-from selenium.webdriver.chrome.service import Service
-from subprocess import CREATE_NO_WINDOW
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import ActionChains, Keys
 from datetime import datetime as time
 from time import sleep
-import re
 import PySimpleGUI as sg
+import json
+import re
+from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.common.by import By
+from subprocess import CREATE_NO_WINDOW
+from selenium.webdriver.chrome.service import Service
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 class Robo:
     def __init__(self, headless, tipo, cli):
@@ -42,10 +42,10 @@ class Robo:
     def login(self):
         self.mensagem("Acessando o Governo Digital...")
         self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-        self.mensagem("Efetuando o login...")
-        self.espera_elemento("//*[@id=form_login:login_username]").send_keys(self.usuario)
-        self.espera_elemento("//*[@id=form_login:login_password]").send_keys(self.senha)
-        self.espera_elemento("//*[@id=form_login:button_login]").click()
+        self.mensagem("Efetuando o login...", 'green')
+        self.espera_elemento('//*[@id="form_login:login_username"]').send_keys(self.usuario)
+        self.espera_elemento('//*[@id="form_login:login_password"]').send_keys(self.senha)
+        self.espera_elemento('//*[@id="form_login:button_login"]').click()
         self.mensagem("Login efetuado com sucesso!")
         
     def acessar_sispatweb(self):
@@ -96,6 +96,7 @@ class Robo:
         
         self.acessar_entrada_por_transferência_nao_incorporado()
         
+        self.mensagem("pesquisando...")
         self.filtrar(origem, ntermo, descricao)
         
         sleep(5)
@@ -194,8 +195,6 @@ class Robo:
         
         pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
-        
-        self.mensagem("pesquisando...")
             
     
     def incorporar(self, origem, ntermo, descricao, patrimonios):
@@ -205,8 +204,9 @@ class Robo:
                     
         self.acessar_entrada_por_transferência_nao_incorporado()
         
-        self.filtrar(self, origem, ntermo, descricao)
-        sleep(5)
+        self.mensagem("pesquisando...")
+        self.filtrar(origem, ntermo, descricao)
+        log = open('relatório.log', 'a')
         for rp in rps:
             selecionar_ben_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')
             selecionar_ben_btn.click()
@@ -223,20 +223,23 @@ class Robo:
             if confirmacao.text == "Bem foi incorporado ao órgão com sucesso.": 
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                self.mensagem(f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+                msg = f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}'
+                self.mensagem(msg, 'green')
+                log.write(msg)
             else:
                 aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
                 self.mensagem(aviso.text, text_color='red')
                 cancelar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[2]')
                 self.navegador.execute_script("arguments[0].click();", cancelar_btn)
-                sleep(1)
-                self.filtrar(self, origem, ntermo, descricao)
-                sleep(5)
                 
+                self.filtrar(origem, ntermo, descricao)
+                
+        log.close()        
         self.navegador.close()
         self.navegador.quit()
+        self.mensagem("Finalizado", text_color='green')
 
 if __name__ == '__main__':
     sispat = Robo(headless=True, tipo='operacional', cli=True)
     sispat.login()
-    sispat.pegar_dados_pistola()
+    

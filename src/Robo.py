@@ -42,11 +42,11 @@ class Robo:
     def login(self):
         self.mensagem("Acessando o Governo Digital...")
         self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-        self.mensagem("Efetuando o login...", 'green')
+        self.mensagem("Efetuando o login...")
         self.espera_elemento('//*[@id="form_login:login_username"]').send_keys(self.usuario)
         self.espera_elemento('//*[@id="form_login:login_password"]').send_keys(self.senha)
         self.espera_elemento('//*[@id="form_login:button_login"]').click()
-        self.mensagem("Login efetuado com sucesso!")
+        self.mensagem("Login efetuado com sucesso!", 'green')
         
     def acessar_sispatweb(self):
         self.espera_elemento('//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')
@@ -206,10 +206,11 @@ class Robo:
         
         self.mensagem("pesquisando...")
         self.filtrar(origem, ntermo, descricao)
+        sleep(1)
         log = open('relatório.log', 'a')
         for rp in rps:
             selecionar_ben_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')
-            selecionar_ben_btn.click()
+            selecionar_ben_btn.click()   
             
             input_rp = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')
             input_rp.send_keys(rp)
@@ -223,12 +224,13 @@ class Robo:
             if confirmacao.text == "Bem foi incorporado ao órgão com sucesso.": 
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                msg = f'{timestamp} - Patrimonio: {rp} Incorporado {cadastrados}/{total}'
+                msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao} Incorporado {cadastrados}/{total}\n'
                 self.mensagem(msg, 'green')
                 log.write(msg)
             else:
                 aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
                 self.mensagem(aviso.text, text_color='red')
+                log.write(aviso.text + '\n')
                 cancelar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[2]')
                 self.navegador.execute_script("arguments[0].click();", cancelar_btn)
                 

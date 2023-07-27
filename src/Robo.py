@@ -54,7 +54,8 @@ class Robo:
         self.mensagem("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
-        dist_nao_recebido = self.espera_elemento('//option[contains(text(),"Distribuído Não Recebido")]')
+        dist_nao_recebido = self.espera_elemento('//a[contains(text(),"Distribuído Não Recebido")]')
+        
         
         self.mensagem('Acessando distribuídos não recebidos...')
        
@@ -66,6 +67,7 @@ class Robo:
         transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
         
         while transferencia_nao_recebida_btn:
+            transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
             transferencia_nao_recebida_btn.click()
             calendario_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')
             calendario_btn.click()

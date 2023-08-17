@@ -151,7 +151,6 @@ class Interface_grafica:
         ]
         
         self.destinos = [
-            "Todos",
             "3ªRISP-SUPERINTENDÊNCIA REGIONAL DA ZONA DO SALGAD",
             "ABAETETUBA - CORREGEDORIA REGIONAL DO BAIXO-TOCANTINS",
             "ABAETETUBA - DELEGACIA",
@@ -162,7 +161,7 @@ class Interface_grafica:
             "ACADEMIA ATLETICA - CORE",
             "ACADEMIA DE POLICIA  CIVIL - INSTITUTO DE ENSINO SUPERIOR DE POLICIA",
             "ACARA - DELEGACIA/DPI",
-            " AEROPORTO DELEGACIA - DPM",
+            "AEROPORTO DELEGACIA - DPM",
             "AFUA - DELEGACIA/DPI",
             "AGUA AZUL DO NORTE - DELEGACIA/DPI",
             "ALENQUER - DELEGACIA/DPI",
@@ -805,9 +804,9 @@ class Interface_grafica:
         
         layout.append([sg.Frame('Incorporar',[
             [sg.Text('Órgão Origem:', size=(15,1)), sg.Combo(self.orgaos, default_value=self.orgaos[0], size=(55,1), readonly=True, enable_events=True, k='-ORGAO-')],
-            [sg.Text('Nº do Termo:', size=(15,1)),sg.Input(key='-NTERMO-', size=(25,1))],
-            [sg.Text('Descrição do Bem:', size=(15,1)),sg.Input(key='-DESCRICAO-', size=(25,1))],
-            [sg.Text('Localização de Destino:', size=(15,1)), sg.Combo(self.orgaos, default_value=self.orgaos[0], size=(55,1), readonly=True, enable_events=True, k='-DESTINO-')],
+            [sg.Text('Nº do Termo:', size=(15,1)),sg.Input(key='-NTERMO-', size=(55,1))],
+            [sg.Text('Descrição:', size=(15,1)),sg.Input(key='-DESCRICAO-', size=(55,1))],
+            [sg.Text('Destino:', size=(15,1)), sg.Combo(self.orgaos, default_value=self.destinos[624], size=(55,1), readonly=True, enable_events=True, k='-DESTINO-')],
             [sg.HorizontalSeparator(pad=(10,20))],
             [sg.Text('Número do RP:', size=(15,1)),sg.Input(key='-RPS-', size=(25,1)),sg.Button('Adicionar')],
             [self.listbox],
@@ -878,7 +877,7 @@ class Interface_grafica:
                 sispat = Robo(headless=values['-HEADLESS-'], tipo='operacional', cli=False)
                 sispat.login()
                 sispat.acessar_sispatweb()
-                sispat.incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value)
+                sispat.incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
                 
             elif event == 'Receber':
                 sispat = Robo(headless=values['-HEADLESS-'], tipo='agente_responsavel', cli=False)

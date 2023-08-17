@@ -2,4 +2,5 @@
 *.json
 *.log
 __pycache__
-robo-sepat
+robo-sepat/
+.tool-versions

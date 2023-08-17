@@ -193,7 +193,7 @@ class Robo:
         descricao_input = self.espera_elemento('//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:descricaomaterial"]')
         descricao_input.send_keys(descricao)
         
-        pesquisar = self.navegador.find_element(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
+        pesquisar = self.espera_elemento(By.XPATH, '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:j_id433"]')
         pesquisar.click()
             
     
@@ -242,6 +242,6 @@ class Robo:
         self.mensagem("Finalizado", text_color='green')
 
 if __name__ == '__main__':
-    sispat = Robo(headless=True, tipo='operacional', cli=True)
+    sispat = Robo(headless=False, tipo='operacional', cli=True)
     sispat.login()
     

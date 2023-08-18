@@ -1,21 +1,21 @@
-from datetime import datetime as time
+import re
+import json
 from time import sleep
 import PySimpleGUI as sg
-import json
-import re
-from selenium.webdriver.common.by import By
-# from subprocess import CREATE_NO_WINDOW
-from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime as time
+from subprocess import CREATE_NO_WINDOW
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class Robo:
     def __init__(self, headless, tipo, cli):
         self.service = Service(ChromeDriverManager().install())
-        #self.service.creationflags = CREATE_NO_WINDOW
+        self.service.creationflags = CREATE_NO_WINDOW
         with open("src/login.json") as file:
             login = json.load(file)
         self.usuario = login[tipo]["usuario"]
@@ -54,11 +54,12 @@ class Robo:
         self.mensagem("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
-        dist_nao_recebido = self.espera_elemento('//*[@id="form_pendencias:list:1:pendencia_17"]')
+        dist_nao_recebido = self.espera_elemento('//tr/td/a[contains(text(), "Distribuído Não Recebido")]')
         
         self.mensagem('Acessando distribuídos não recebidos...')
        
-        dist_nao_recebido.click()
+        self.navegador.execute_script("arguments[0].click();", dist_nao_recebido)
+        sleep(30)
     
     def receber(self):
         self.acessar_dist_nao_recebido()
@@ -66,6 +67,7 @@ class Robo:
         transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
         
         while transferencia_nao_recebida_btn:
+            transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
             transferencia_nao_recebida_btn.click()
             calendario_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')
             calendario_btn.click()
@@ -159,8 +161,7 @@ class Robo:
                 self.mensagem(aviso.text, text_color='red')
                 log.write(aviso.text)
                 self.navegador.close()
-                self.navegador.quit()
-                
+                self.navegador.quit()              
         
     def filtrar(self, origem, ntermo, descricao):
         orgao_origem_selection = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[1]/fieldset/table[1]/tbody/tr/td[2]/select')
@@ -249,8 +250,13 @@ class Robo:
         self.mensagem("Finalizado", text_color='green')
 
 if __name__ == '__main__':
-    sispat = Robo(headless=False, tipo='operacional', cli=True)
+    sispat = Robo(
+        headless=False,
+        tipo='agente_responsavel',
+        cli=True
+        )
+    
     sispat.login()
     sispat.acessar_sispatweb()
-    sispat.incorporar_pistolas()
+    sispat.acessar_dist_nao_recebido()
     

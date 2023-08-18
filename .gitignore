@@ -2,5 +2,8 @@
 *.json
 *.log
 __pycache__
+build
+dist
+app.spec
 robo-sepat/
 .tool-versions

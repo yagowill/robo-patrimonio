@@ -1,10 +1,10 @@
-import re
+import os
 import json
 from time import sleep
 import PySimpleGUI as sg
 from selenium import webdriver
 from datetime import datetime as time
-from subprocess import CREATE_NO_WINDOW
+#from subprocess import CREATE_NO_WINDOW
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -12,10 +12,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class Robo:
+class Sispat:
     def __init__(self, headless, tipo, cli):
         self.service = Service(ChromeDriverManager().install())
-        self.service.creationflags = CREATE_NO_WINDOW
+        #self.service.creationflags = CREATE_NO_WINDOW
         with open("src/login.json") as file:
             login = json.load(file)
         self.usuario = login[tipo]["usuario"]
@@ -60,27 +60,6 @@ class Robo:
        
         self.navegador.execute_script("arguments[0].click();", dist_nao_recebido)
         sleep(30)
-    
-    def receber(self):
-        self.acessar_dist_nao_recebido()
-                        
-        transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
-        
-        while transferencia_nao_recebida_btn:
-            transferencia_nao_recebida_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
-            transferencia_nao_recebida_btn.click()
-            calendario_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')
-            calendario_btn.click()
-            data_btn = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')
-            data_btn.click()
-            receber = self.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')
-            receber.click()
-            confirmacao = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
-            assert re.search("recebido com sucesso.",confirmacao.text) != None
-            timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-            self.mensagem(f'{timestamp} {confirmacao.text}')
-        self.navegador.quit()
-            
         
     def acessar_entrada_por_transferencia_nao_incorporado(self):
         entrada_por_transferencia_nao_incorporado = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')
@@ -179,84 +158,4 @@ class Robo:
         pesquisar = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr/td/input[1]')
         
         self.navegador.execute_script("arguments[0].click();", pesquisar)
-            
-    
-    def incorporar(self, origem, ntermo, descricao, patrimonios, destino):
-        rps = patrimonios
-        cadastrados = 0  
-        total = len(rps)
-                    
-        self.acessar_entrada_por_transferencia_nao_incorporado()
         
-        self.mensagem("pesquisando...")
-        self.filtrar(origem, ntermo, descricao)
-        sleep(1)
-        log = open('relatório.log', 'a')
-        for rp in rps:
-            selecionar_ben_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')
-            selecionar_ben_btn.click()   
-            
-            input_rp = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')
-            input_rp.send_keys(rp)
-            
-            btn_pesquisa = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/fieldset/table/tbody/tr/td[2]/table/tbody/tr/td[2]/input')
-            btn_pesquisa.click()
-            
-            input_pesquisa = '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/table[2]/tbody/tr/td[1]/table/tbody/tr[1]/td[2]/input'
-            
-            input_pesquisa.send_keys(destino)
-            
-            btn_pesquisar = '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/table[2]/tbody/tr/td[2]/table/tbody/tr/td/input'
-            
-            self.navegador.execute_script("arguments[0].click();", btn_pesquisar)
-            
-            sleep(1)
-            
-            btn_destino = '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/span/table/tbody/tr/td[3]/a'
-            
-            self.navegador.execute_script("arguments[0].click();", btn_destino)
-            
-            sleep(1)
-            
-            confirmar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[1]')
-            
-            self.navegador.execute_script("arguments[0].click();", confirmar_btn)
-            
-            sleep(1)
-            
-            
-            confirmacao = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
-            
-            if confirmacao.text == "Bem foi incorporado ao órgão com sucesso.":
-                btn_imprimir_depois = '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/div/div[2]/input[2]'
-                self.navegador.execute_script("arguments[0].click();", btn_imprimir_depois) 
-                timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-                cadastrados += 1
-                msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao} Incorporado {cadastrados}/{total}\n'
-                self.mensagem(msg, 'green')
-                log.write(msg)
-            else:
-                aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
-                self.mensagem(aviso.text, text_color='red')
-                log.write(aviso.text + '\n')
-                cancelar_btn = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[2]')
-                self.navegador.execute_script("arguments[0].click();", cancelar_btn)
-                
-                self.filtrar(origem, ntermo, descricao)
-                
-        log.close()        
-        self.navegador.close()
-        self.navegador.quit()
-        self.mensagem("Finalizado", text_color='green')
-
-if __name__ == '__main__':
-    sispat = Robo(
-        headless=False,
-        tipo='agente_responsavel',
-        cli=True
-        )
-    
-    sispat.login()
-    sispat.acessar_sispatweb()
-    sispat.acessar_dist_nao_recebido()
-    

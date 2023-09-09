@@ -1,10 +1,9 @@
-import os
+import platform
 import json
 from time import sleep
 import PySimpleGUI as sg
 from selenium import webdriver
 from datetime import datetime as time
-#from subprocess import CREATE_NO_WINDOW
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -15,7 +14,9 @@ from selenium.webdriver.support import expected_conditions as EC
 class Sispat:
     def __init__(self, headless, tipo, cli):
         self.service = Service(ChromeDriverManager().install())
-        #self.service.creationflags = CREATE_NO_WINDOW
+        if(platform.system() == "Windows"):
+            from subprocess import CREATE_NO_WINDOW
+            self.service.creationflags = CREATE_NO_WINDOW
         with open("src/login.json") as file:
             login = json.load(file)
         self.usuario = login[tipo]["usuario"]
@@ -32,6 +33,9 @@ class Sispat:
             
     def espera_elemento(self, xpath):
         return WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, xpath)))
+    
+    def espera_elemento_selector(self, selector):
+        return WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
         
     def mensagem(self, msg, text_color=None):
         if self.cli:
@@ -59,7 +63,7 @@ class Sispat:
         self.mensagem('Acessando distribuídos não recebidos...')
        
         self.navegador.execute_script("arguments[0].click();", dist_nao_recebido)
-        sleep(30)
+        sleep(5)
         
     def acessar_entrada_por_transferencia_nao_incorporado(self):
         entrada_por_transferencia_nao_incorporado = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')

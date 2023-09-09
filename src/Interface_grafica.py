@@ -19,7 +19,7 @@ class Interface_grafica:
             [sg.Text('Órgão Origem:', size=(15,1)), sg.Combo(self.orgaos, default_value=self.orgaos[0], size=(55,1), readonly=True, enable_events=True, k='-ORGAO-')],
             [sg.Text('Nº do Termo:', size=(15,1)),sg.Input(key='-NTERMO-', size=(55,1))],
             [sg.Text('Descrição:', size=(15,1)),sg.Input(key='-DESCRICAO-', size=(55,1))],
-            [sg.Text('Destino:', size=(15,1)), sg.Combo(self.orgaos, default_value=self.destinos[624], size=(55,1), readonly=True, enable_events=True, k='-DESTINO-')],
+            [sg.Text('Destino:', size=(15,1)), sg.Combo(self.destinos, default_value=self.destinos[624], size=(55,1), readonly=True, enable_events=True, k='-DESTINO-')],
             [sg.HorizontalSeparator(pad=(10,20))],
             [sg.Text('Número do RP:', size=(15,1)),sg.Input(key='-RPS-', size=(25,1)),sg.Button('Adicionar')],
             [self.listbox],
@@ -39,19 +39,22 @@ class Interface_grafica:
         
         while True:
             event, values = janela.read()
-            if event == sg.WIN_CLOSED:
-                break
-            elif event == 'Adicionar':
-                rps = values['-RPS-']
-                if rps != '' and rps != ' ':
-                    if ':' in rps:
-                        rps = rps.split(':')
-                        try:
-                            rps = range(int(rps[0]), (int(rps[1])+1))
-                            for i in rps:
-                                self.rps_value.append(i)
-                        except:
-                            sg.popup('Não é possível gerar sequência de letras.', title='Erro')
+            
+            match event:
+                case sg.WIN_CLOSED:
+                    break
+            
+                case 'Adicionar':
+                    rps = values['-RPS-']
+                    if rps != '' and rps != ' ':
+                        if ':' in rps:
+                            rps = rps.split(':')
+                            try:
+                                rps = range(int(rps[0]), (int(rps[1])+1))
+                                for i in rps:
+                                    self.rps_value.append(i)
+                            except:
+                                sg.popup('Não é possível gerar sequência de letras.', title='Erro')
 
                     elif ',' in rps:
                         rps = rps.split(',')
@@ -73,21 +76,21 @@ class Interface_grafica:
                     janela['-RPS-'].update('')
                     janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                     
-            elif event == 'Limpar':
-                self.rps_value = []
-                janela['-LIST-'].update('')
-                janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+                case 'Limpar':
+                    self.rps_value = []
+                    janela['-LIST-'].update('')
+                    janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                 
-            elif event == 'Remover':
-                if self.listbox.get() != []:
-                    val = self.listbox.get()
-                    for i in val:
-                        self.rps_value.remove(i)
-                        janela['-LIST-'].update(self.rps_value)
-                        janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+                case 'Remover':
+                    if self.listbox.get() != []:
+                        val = self.listbox.get()
+                        for i in val:
+                            self.rps_value.remove(i)
+                            janela['-LIST-'].update(self.rps_value)
+                            janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+                        
+                case 'Incorporar':
+                    incorporar(headless=values['-HEADLESS-'], cli=False, origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
                     
-            elif event == 'Incorporar':
-                incorporar(headless=values['-HEADLESS-'], cli=False, origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
-                
-            elif event == 'Receber':
-                receber(headless=values['-HEADLESS-'], cli=False)
+                case 'Receber':
+                    receber(headless=values['-HEADLESS-'], cli=False)

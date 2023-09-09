@@ -8,11 +8,13 @@ def receber(headless, cli):
     
     sispat.login()
     sispat.acessar_sispatweb()
+    nao_recebidos =  sispat.espera_elemento_selector('#form_pendencias\:panel > table > tbody > tr:nth-child(3) > td.col_quantidade > span')
+    qtd_nao_recebidos = int(nao_recebidos.text)
+    print(qtd_nao_recebidos, type(qtd_nao_recebidos))
     sispat.acessar_dist_nao_recebido()
                     
-    transferencia_nao_recebida_btn = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
-    
-    while transferencia_nao_recebida_btn:
+
+    for i in range(qtd_nao_recebidos + 1):
         transferencia_nao_recebida_btn = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')
         transferencia_nao_recebida_btn.click()
         calendario_btn = sispat.espera_elemento('/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')

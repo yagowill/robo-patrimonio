@@ -72,4 +72,3 @@ def incorporar(headless, cli, origem, ntermo, descricao, patrimonios, destino):
     log.close()        
     sispat.navegador.quit()
     sispat.mensagem("Finalizado", text_color='green')
-    

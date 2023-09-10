@@ -14,3 +14,5 @@ def incorporar():
 def receber():
     return render_template('receber.html')
 
+if __name__ == "__main__":
+    app.run(debug=True)

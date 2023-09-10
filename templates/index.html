@@ -82,22 +82,39 @@
       const textArea = document.getElementById('floatingTextarea2');
       const darkMode = document.getElementById('dark');
 
+      window.addEventListener("load",() => {
+        const html = document.querySelector("html");
+        const sol = document.querySelector(".bi-moon-stars-fill");
+        const lua = document.querySelector(".bi-brightness-high-fill");
+        if(localStorage) {
+          if(localStorage.getItem("theme") == "dark") {
+            html.setAttribute('data-bs-theme', 'dark');
+            sol.toggleAttribute("hidden");
+            lua.toggleAttribute("hidden");
+          }
+        } else {
+          localStorage.setAttribute("theme", html.getAttribute("data-bs-theme"))
+        }
+      },false)
+
       darkMode.addEventListener("click", () => {
           const html = document.querySelector("html");
           const sol = document.querySelector(".bi-moon-stars-fill");
-          const lua = document.querySelector(".bi-brightness-high-fill")
+          const lua = document.querySelector(".bi-brightness-high-fill");
 
           if(html.getAttribute("data-bs-theme") == "ligth") {
               html.setAttribute('data-bs-theme', 'dark');
               sol.toggleAttribute("hidden");
               lua.toggleAttribute("hidden");
+              localStorage.setItem("theme", "dark");
 
           } else {
               html.setAttribute('data-bs-theme', 'ligth');
               sol.toggleAttribute("hidden");
               lua.toggleAttribute("hidden");
+              localStorage.setItem("theme", "ligth");
           }
-      })
+      }, false)
 
       input.addEventListener("input", () => {
           const rps = document.getElementById('text').value.trim();

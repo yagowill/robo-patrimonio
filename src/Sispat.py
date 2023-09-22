@@ -1,4 +1,3 @@
-import platform
 import json
 from time import sleep
 import PySimpleGUI as sg
@@ -6,30 +5,19 @@ from selenium import webdriver
 from datetime import datetime as time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class Sispat:
-    def __init__(self, headless, tipo, cli):
+    def __init__(self, tipo, cli):
         self.service = Service(ChromeDriverManager().install())
-        if(platform.system() == "Windows"):
-            from subprocess import CREATE_NO_WINDOW
-            self.service.creationflags = CREATE_NO_WINDOW
         with open("src/login.json") as file:
             login = json.load(file)
         self.usuario = login[tipo]["usuario"]
         self.senha = login[tipo]["senha"]
         self.cli = cli
-        if headless:
-            options = Options()
-            options.add_argument("--headless=new")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--disable-dev-shm-usage")
-            self.navegador = webdriver.Chrome(service=self.service, options=options)
-        else:
-            self.navegador = webdriver.Chrome(service=self.service)
+        self.navegador = webdriver.Chrome(service=self.service)
             
     def espera_elemento(self, xpath):
         return WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.XPATH, xpath)))

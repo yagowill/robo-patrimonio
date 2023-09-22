@@ -2,8 +2,8 @@ from src.Sispat import Sispat
 from time import sleep ,time
 
 
-def incorporar(headless, cli, origem, ntermo, descricao, patrimonios, destino):
-    sispat = Sispat(headless=headless, tipo='operacional', cli=cli)
+def incorporar(cli, origem, ntermo, descricao, patrimonios, destino):
+    sispat = Sispat(tipo='operacional', cli=cli)
     rps = patrimonios
     cadastrados = 0  
     total = len(rps)

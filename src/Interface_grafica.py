@@ -29,8 +29,6 @@ class Interface_grafica:
         receber.append([sg.Frame('',[[sg.Text('Distribuídos não recebidos'),sg.Push(),sg.Button('Receber')]], size=(555,40) )])
         
         layout.append(receber)
-        
-        layout.append([sg.Checkbox('Executar em segunda plano', default=False, k='-HEADLESS-'), sg.Push()])
 
         return sg.Window('Robô Patrimônio', layout=layout, finalize=True)
 
@@ -90,7 +88,7 @@ class Interface_grafica:
                             janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                         
                 case 'Incorporar':
-                    incorporar(headless=values['-HEADLESS-'], cli=False, origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
+                    incorporar(cli=False, origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
                     
                 case 'Receber':
-                    receber(headless=values['-HEADLESS-'], cli=False)
+                    receber(cli=False, strategy='Tudo')

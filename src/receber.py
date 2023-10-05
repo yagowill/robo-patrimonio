@@ -7,8 +7,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
     
 
-def receber(cli, strategy):
-    sispat = Sispat(tipo='agente_responsavel', cli=cli)
+def receber(strategy):
+    sispat = Sispat(tipo='agente_responsavel')
     
     sispat.login()
     sispat.acessar_sispatweb()
@@ -35,7 +35,7 @@ def receber(cli, strategy):
                         confirmacao = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
                         assert re.search("recebido com sucesso.",confirmacao.text) != None
                         timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-                        sispat.mensagem(f'{timestamp} {unidade_origem} {confirmacao.text}')
+                        print(f'{timestamp} {unidade_origem} {confirmacao.text}')
                         unidade_origem = sispat.espera_elemento(f'/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[{i}]/td[3]').text
                         
                 avançar = sispat.espera_elemento('//*[@id="movimentacao_interna_form_lista:paginador_table"]/tbody/tr/td[contains(text(), "»")]')
@@ -56,6 +56,6 @@ def receber(cli, strategy):
                 confirmacao = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')
                 assert re.search("recebido com sucesso.",confirmacao.text) != None
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-                sispat.mensagem(f'{timestamp} {confirmacao.text}')
+                print(f'{timestamp} {confirmacao.text}')
             sispat.navegador.quit()
     

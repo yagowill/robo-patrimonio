@@ -88,7 +88,7 @@ class Interface_grafica:
                             janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                         
                 case 'Incorporar':
-                    incorporar(cli=False, origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
+                    incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
                     
                 case 'Receber':
-                    receber(cli=False, strategy='Tudo')
+                    receber(strategy='Tudo')

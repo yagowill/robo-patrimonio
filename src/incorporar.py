@@ -2,8 +2,8 @@ from src.Sispat import Sispat
 from time import sleep ,time
 
 
-def incorporar(cli, origem, ntermo, descricao, patrimonios, destino):
-    sispat = Sispat(tipo='operacional', cli=cli)
+def incorporar(origem, ntermo, descricao, patrimonios, destino):
+    sispat = Sispat(tipo='operacional')
     rps = patrimonios
     cadastrados = 0  
     total = len(rps)
@@ -13,7 +13,7 @@ def incorporar(cli, origem, ntermo, descricao, patrimonios, destino):
                 
     sispat.acessar_entrada_por_transferencia_nao_incorporado()
     
-    sispat.mensagem("pesquisando...")
+    print("pesquisando...")
     sispat.filtrar(origem, ntermo, descricao)
     sleep(1)
     log = open('relatório.log', 'a')
@@ -58,11 +58,11 @@ def incorporar(cli, origem, ntermo, descricao, patrimonios, destino):
             timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
             cadastrados += 1
             msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao} Incorporado {cadastrados}/{total}\n'
-            sispat.mensagem(msg, 'green')
+            print(msg, 'green')
             log.write(msg)
         else:
             aviso = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
-            sispat.mensagem(aviso.text, text_color='red')
+            print(aviso.text, text_color='red')
             log.write(aviso.text + '\n')
             cancelar_btn = sispat.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/table/tbody/tr/td/input[2]')
             sispat.navegador.execute_script("arguments[0].click();", cancelar_btn)
@@ -71,4 +71,4 @@ def incorporar(cli, origem, ntermo, descricao, patrimonios, destino):
             
     log.close()        
     sispat.navegador.quit()
-    sispat.mensagem("Finalizado", text_color='green')
+    print("Finalizado")

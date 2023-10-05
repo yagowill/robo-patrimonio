@@ -1,6 +1,5 @@
 import json
 from time import sleep
-import PySimpleGUI as sg
 from selenium import webdriver
 from datetime import datetime as time
 from selenium.webdriver.common.by import By
@@ -10,13 +9,12 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class Sispat:
-    def __init__(self, tipo, cli):
+    def __init__(self, tipo):
         self.service = Service(ChromeDriverManager().install())
         with open("src/login.json") as file:
             login = json.load(file)
         self.usuario = login[tipo]["usuario"]
         self.senha = login[tipo]["senha"]
-        self.cli = cli
         self.navegador = webdriver.Chrome(service=self.service)
             
     def espera_elemento(self, xpath):
@@ -24,31 +22,26 @@ class Sispat:
     
     def espera_elemento_selector(self, selector):
         return WebDriverWait(self.navegador, timeout=60).until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
-        
-    def mensagem(self, msg, text_color=None):
-        if self.cli:
-            print(msg)
-        else:
-            sg.Print(msg, text_color=text_color)
+    
             
     def login(self):
-        self.mensagem("Acessando o Governo Digital...")
+        print("Acessando o Governo Digital...")
         self.navegador.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-        self.mensagem("Efetuando o login...")
+        print("Efetuando o login...")
         self.espera_elemento('//*[@id="form_login:login_username"]').send_keys(self.usuario)
         self.espera_elemento('//*[@id="form_login:login_password"]').send_keys(self.senha)
         self.espera_elemento('//*[@id="form_login:button_login"]').click()
-        self.mensagem("Login efetuado com sucesso!", 'green')
+        print("Login efetuado com sucesso!")
         
     def acessar_sispatweb(self):
         self.espera_elemento('//*[@id="form_sistema:submit_area"]/div/div[3]/div[1]/a/img')
         self.navegador.get('https://www.sistemas.pa.gov.br/sispat')
-        self.mensagem("Acessando o SispatWeb...")
+        print("Acessando o SispatWeb...")
         
     def acessar_dist_nao_recebido(self):
         dist_nao_recebido = self.espera_elemento('//tr/td/a[contains(text(), "Distribuído Não Recebido")]')
         
-        self.mensagem('Acessando distribuídos não recebidos...')
+        print('Acessando distribuídos não recebidos...')
        
         self.navegador.execute_script("arguments[0].click();", dist_nao_recebido)
         sleep(5)
@@ -56,7 +49,7 @@ class Sispat:
     def acessar_entrada_por_transferencia_nao_incorporado(self):
         entrada_por_transferencia_nao_incorporado = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[3]/div/table/tbody/tr/td[1]/a')
         
-        self.mensagem("Acessando entrada por tranferência não incorporados...")
+        print("Acessando entrada por tranferência não incorporados...")
         
         entrada_por_transferencia_nao_incorporado.click()
         
@@ -70,7 +63,7 @@ class Sispat:
         
         self.acessar_entrada_por_transferencia_nao_incorporado()
         
-        self.mensagem("pesquisando...")
+        print("pesquisando...")
         self.filtrar(origem, ntermo, descricao)
 
         sleep(5)
@@ -122,14 +115,14 @@ class Sispat:
                 assert confirmacao.text == "Bem foi incorporado ao órgão com sucesso."
                 timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
                 cadastrados += 1
-                self.mensagem(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
+                print(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}')
                 log.write(f'{timestamp} - Descrição: {descricao} Patrimonio: {rp} Incorporado {cadastrados}/{total}\n')
                 log.close()
                 cout -= 1
             except:
                 aviso = self.espera_elemento('/html/body/div/div[1]/table/tbody/tr/td[3]/div/div/table/tbody/tr/td/span[2]')
                 
-                self.mensagem(aviso.text, text_color='red')
+                print(aviso.text)
                 log.write(aviso.text)
                 self.navegador.close()
                 self.navegador.quit()              

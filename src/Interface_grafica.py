@@ -49,67 +49,67 @@ class Interface_grafica:
         while True:
             event, values = janela.read()
             
-            match event:
-                case sg.WIN_CLOSED:
-                    break
-            
-                case 'Adicionar':
-                    rps = values['-RPS-']
-                    if rps != '' and rps != ' ':
-                        if ':' in rps:
-                            rps = rps.split(':')
-                            try:
-                                rps = range(int(rps[0]), (int(rps[1])+1))
-                                for i in rps:
-                                    self.rps_value.append(i)
-                            except:
-                                sg.popup('Não é possível gerar sequência de letras.', title='Erro')
 
-                        elif ',' in rps:
-                            rps = rps.split(',')
+            if event == sg.WIN_CLOSED:
+                break
+        
+            elif event == 'Adicionar':
+                rps = values['-RPS-']
+                if rps != '' and rps != ' ':
+                    if ':' in rps:
+                        rps = rps.split(':')
+                        try:
+                            rps = range(int(rps[0]), (int(rps[1])+1))
                             for i in rps:
-                                rp = i.strip()
-                                if rp in self.rps_value:
-                                    continue
-                                else:
-                                    self.rps_value.append(rp)
-                        
-                        elif '\n' in rps:
-                            rps = rps.strip()
-                            rps = rps.split('\n')
-                            for i in rps:
-                                rp = i.strip()
-                                if rp in self.rps_value:
-                                    continue
-                                else:
-                                    self.rps_value.append(rp)
-                                    
-                        else:
-                            rp = rps.strip()
+                                self.rps_value.append(i)
+                        except:
+                            sg.popup('Não é possível gerar sequência de letras.', title='Erro')
+
+                    elif ',' in rps:
+                        rps = rps.split(',')
+                        for i in rps:
+                            rp = i.strip()
                             if rp in self.rps_value:
                                 continue
                             else:
                                 self.rps_value.append(rp)
                     
-                    janela['-LIST-'].update(self.rps_value)
-                    janela['-RPS-'].update('')
-                    janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
-                    
-                case 'Limpar':
-                    self.rps_value = []
-                    janela['-LIST-'].update('')
-                    janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+                    elif '\n' in rps:
+                        rps = rps.strip()
+                        rps = rps.split('\n')
+                        for i in rps:
+                            rp = i.strip()
+                            if rp in self.rps_value:
+                                continue
+                            else:
+                                self.rps_value.append(rp)
+                                
+                    else:
+                        rp = rps.strip()
+                        if rp in self.rps_value:
+                            continue
+                        else:
+                            self.rps_value.append(rp)
                 
-                case 'Remover':
-                    if self.listbox.get() != []:
-                        val = self.listbox.get()
-                        for i in val:
-                            self.rps_value.remove(i)
-                            janela['-LIST-'].update(self.rps_value)
-                            janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
-                        
-                case 'Incorporar':
-                    incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
+                janela['-LIST-'].update(self.rps_value)
+                janela['-RPS-'].update('')
+                janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+                
+            elif event == 'Limpar':
+                self.rps_value = []
+                janela['-LIST-'].update('')
+                janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
+            
+            elif event == 'Remover':
+                if self.listbox.get() != []:
+                    val = self.listbox.get()
+                    for i in val:
+                        self.rps_value.remove(i)
+                        janela['-LIST-'].update(self.rps_value)
+                        janela['-ADICIONADOS-'].update(f'{len(self.rps_value)} rps adicionados')
                     
-                case 'Receber':
-                    receber(strategy='Tudo')
+            elif event == 'Incorporar':
+                incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
+                
+            elif event == 'Receber':
+                receber(strategy='TUDO')

@@ -6,7 +6,7 @@ from datetime import datetime as time
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def receber(strategy):
+def receber(strategy='TUDO'):
     driver = sispat.driver()
     
     sispat.login(driver, "agente_responsavel")

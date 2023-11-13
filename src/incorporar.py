@@ -1,6 +1,7 @@
 from src import sispat
 from src.filtrar import filtrar
-from time import sleep ,time
+from time import sleep
+from datetime import datetime as time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,12 +19,15 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
     
     print("pesquisando...")
     filtrar(driver, origem, ntermo, descricao)
-    sleep(1)
+    sleep(1.5)
     log = open('relatório.log', 'a')
     for rp in rps:
+        sleep(1.5)
         selecionar_ben_btn = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')))
-        selecionar_ben_btn.click()   
+        
+        driver.execute_script("arguments[0].click();", selecionar_ben_btn)
+        sleep(.5)
         
         input_rp = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/table[2]/tbody/tr[2]/td[2]/input')))
@@ -31,7 +35,9 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
         
         btn_pesquisa = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form/div/div/fieldset/table/tbody/tr/td[2]/table/tbody/tr/td[2]/input')))
-        btn_pesquisa.click()
+        
+        driver.execute_script("arguments[0].click();", btn_pesquisa)
+        sleep(.5)
         
         input_pesquisa = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/table[2]/tbody/tr/td[1]/table/tbody/tr[1]/td[2]/input')))
@@ -66,7 +72,8 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
         if confirmacao.text == "Bem foi incorporado ao órgão com sucesso.":
             btn_imprimir_depois = WebDriverWait(driver, timeout=60)\
                 .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/div/div[2]/input[2]')))
-            driver.execute_script("arguments[0].click();", btn_imprimir_depois) 
+            driver.execute_script("arguments[0].click();", btn_imprimir_depois)
+            sleep(0.5)
             timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
             cadastrados += 1
             msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao} Incorporado {cadastrados}/{total}\n'

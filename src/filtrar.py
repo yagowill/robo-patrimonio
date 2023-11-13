@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 
 xpath_root = '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr'
 
@@ -14,11 +15,9 @@ xpaths = {
 def filtrar(driver, origem, ntermo, descricao):
         orgao_origem_selection = WebDriverWait(driver, timeout=60)\
             .until(EC.presence_of_element_located((By.XPATH, xpaths['org_origem_path'])))
-        orgao_origem_selection.click()
+        select = Select(orgao_origem_selection)
         
-        origem_option = WebDriverWait(driver, timeout=60)\
-            .until(EC.presence_of_element_located((By.XPATH,  f'//option[contains(text(),"{origem}")]')))
-        origem_option.click()
+        select.select_by_visible_text(origem)
         
         n_termo = WebDriverWait(driver, timeout=60)\
             .until(EC.presence_of_element_located((By.XPATH, xpaths['n_termo_path'])))

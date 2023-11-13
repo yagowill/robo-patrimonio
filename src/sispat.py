@@ -18,7 +18,7 @@ def login(driver, tipo):
     driver.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
     
     print("Efetuando o login...")
-    with open("src/login.json") as file:
+    with open("config.json") as file:
         login = json.load(file)
     usuario = login[tipo]["usuario"]
     senha = login[tipo]["senha"]

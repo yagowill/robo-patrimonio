@@ -5,6 +5,7 @@ from src.orgaos import orgaos
 from src.unidades_localizacao import destinos
 
 sg.theme('DarkBlue')
+
 class Interface_grafica:
     def __init__(self):
         self.rps_value = []
@@ -15,23 +16,26 @@ class Interface_grafica:
         layout = []
         receber = []
         
-        layout.append([sg.Frame('',[
-            [sg.Text('Órgão Origem:', size=(15,1))],
-            [sg.Combo(self.orgaos, default_value=self.orgaos[0], readonly=True, enable_events=True, k='-ORGAO-')],
-            [sg.Text('Nº do Termo:', size=(15,1))],
+        col_left = [
+            [sg.Text('Órgão Origem:')],
+            [sg.Combo(self.orgaos, default_value=self.orgaos[0], readonly=True, enable_events=True, k='-ORGAO-', size=(78,1))],
+            [sg.Text('Nº do Termo:')],
             [sg.Input(key='-NTERMO-', size=(78,1))],
-            [sg.Text('Descrição:', size=(15,1))],
+            [sg.Text('Descrição:')],
             [sg.Input(key='-DESCRICAO-', size=(78,1))],
-            [sg.Text('Destino:', size=(15,1))],
-            [sg.Combo(self.destinos, default_value=self.destinos[624], readonly=True, enable_events=True, k='-DESTINO-')],
-            [sg.Push()],
-            [sg.Text('0 rps adicionados', k='-ADICIONADOS-'),sg.Push(), sg.Button('Limpar', button_color='gray'),sg.Button('Remover', button_color='red'),sg.Button('Incorporar', button_color='green')]], size=(560,444)),
-            
-            sg.Frame('',[
+            [sg.Text('Destino:')],
+            [sg.Combo(self.destinos, default_value=self.destinos[624], readonly=True, enable_events=True, k='-DESTINO-', size=(78,1))],
+            [sg.VPush()],
+            [sg.Push(), sg.Button('Limpar', button_color='gray'),sg.Button('Remover', button_color='red'),sg.Button('Incorporar', button_color='green')]]
+        
+        col_right = [
             [sg.Text('Número do RP:')],
             [sg.Input(key='-RPS-', size=(25,1)),sg.Button('Adicionar')],
-            [self.listbox]])
-        ])
+            [self.listbox],
+            [sg.Text('0 rps adicionados', k='-ADICIONADOS-')]]
+        
+        
+        layout.append([sg.Column(col_left, vertical_alignment='top'), sg.Column(col_right)])
         
         receber.append([sg.Frame('Receber',[[sg.Text('Distribuídos não recebidos'),sg.Push(),sg.Button('Receber')]], size=(857,50) )])
         

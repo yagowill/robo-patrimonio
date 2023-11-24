@@ -89,6 +89,7 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
             driver.execute_script("arguments[0].click();", cancelar_btn)
             
             filtrar(driver, origem, ntermo, descricao)
+            sleep(1.5)
             
     log.close()        
     driver.quit()

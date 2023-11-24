@@ -6,4 +6,5 @@ build
 dist
 app.spec
 robo-sepat/
-.tool-versions
+.tool-versionsvenv/ 
+venv

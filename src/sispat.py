@@ -3,16 +3,14 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def driver():
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome()
     return driver
 
-def login(driver, tipo):
+def login(driver):
     print("Acessando o Governo Digital...")
     
     driver.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
@@ -20,8 +18,8 @@ def login(driver, tipo):
     print("Efetuando o login...")
     with open("config.json") as file:
         login = json.load(file)
-    usuario = login[tipo]["usuario"]
-    senha = login[tipo]["senha"]
+    usuario = login["usuario"]
+    senha = login["senha"]
     
     WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '//*[@id="form_login:login_username"]')))\

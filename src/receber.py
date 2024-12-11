@@ -9,10 +9,10 @@ from selenium.webdriver.support import expected_conditions as EC
 def receber(strategy='TUDO'):
     driver = sispat.driver()
     
-    sispat.login(driver, "agente_responsavel")
+    sispat.login(driver)
     sispat.sispatweb(driver)
     nao_recebidos =  WebDriverWait(driver, timeout=60)\
-        .until(EC.presence_of_element_located((By.CSS_SELECTOR, '#form_pendencias\:panel > table > tbody > tr:nth-child(2) > td.col_quantidade > span')))
+        .until(EC.presence_of_element_located((By.CSS_SELECTOR, '#form_pendencias\:panel > table > tbody > tr:last-child > td.col_quantidade > span')))
     qtd_nao_recebidos = int(nao_recebidos.text)
     print(f"Quantidade de não recebidos: {qtd_nao_recebidos}")
     sispat.dist_nao_recebido(driver)
@@ -62,27 +62,29 @@ def receber(strategy='TUDO'):
                 
         case 'TUDO':
             for i in range(qtd_nao_recebidos + 1):
-                transferencia_nao_recebida_btn = WebDriverWait(driver, timeout=60)\
-                    .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')))
-                transferencia_nao_recebida_btn.click()
+                try:
+                    transferencia_nao_recebida_btn = WebDriverWait(driver, timeout=60)\
+                        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[7]')))
                 
-                calendario_btn = WebDriverWait(driver, timeout=60)\
-                    .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')))
-                calendario_btn.click()
-                
-                data_btn = WebDriverWait(driver, timeout=60)\
-                    .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')))
-                data_btn.click()
-                
-                receber = WebDriverWait(driver, timeout=60)\
-                    .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')))
-                receber.click()
-                
-                confirmacao = WebDriverWait(driver, timeout=60)\
-                    .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+                    transferencia_nao_recebida_btn.click()
                     
-                assert re.search("recebido com sucesso.",confirmacao.text) != None
-                timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
-                print(f'{timestamp} {confirmacao.text}')
-            driver.quit()
+                    calendario_btn = WebDriverWait(driver, timeout=60)\
+                        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/span/img')))
+                    calendario_btn.click()
+                    
+                    data_btn = WebDriverWait(driver, timeout=60)\
+                        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/fieldset/div/table/tbody/tr[4]/td[2]/table/tbody/tr[9]/td/table/tbody/tr/td[5]/div')))
+                    data_btn.click()
+                    
+                    receber = WebDriverWait(driver, timeout=60)\
+                        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[2]/td/form/div/input[1]')))
+                    receber.click()
+                    
+                    confirmacao = WebDriverWait(driver, timeout=60)\
+                        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/div[1]/table/tbody/tr/td/span[2]')))
+                        
+                    assert re.search("recebido com sucesso.",confirmacao.text) != None
+                    timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
+                    print(f'{timestamp} {confirmacao.text}')
+                except: driver.quit()
     

@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 def incorporar(origem, ntermo, descricao, patrimonios, destino):
     driver = sispat.driver()
-    sispat.login(driver,'operacional')
+    sispat.login(driver)
     
     rps = patrimonios
     cadastrados = 0  

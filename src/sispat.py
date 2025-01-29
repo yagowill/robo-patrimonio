@@ -43,6 +43,7 @@ def sispatweb(driver):
     driver.get('https://www.sistemas.pa.gov.br/sispat')
     print("Acessando o SispatWeb...")
 
+
 def nao_incorporado(driver):
     entrada_por_transferencia_nao_incorporado = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '//tr/td/a[contains(text(), "Entrada por Transferência Não Incorporado")]')))

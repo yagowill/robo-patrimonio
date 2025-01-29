@@ -25,6 +25,8 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
         sleep(1.5)
         selecionar_ben_btn = WebDriverWait(driver, timeout=60)\
         .until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[8]/a/img')))
+
+        descricao_sistema = driver.find_element(By.XPATH, "/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[2]/span/table/tbody/tr[1]/td[3]").text
         
         driver.execute_script("arguments[0].click();", selecionar_ben_btn)
         sleep(.5)
@@ -76,7 +78,7 @@ def incorporar(origem, ntermo, descricao, patrimonios, destino):
             sleep(0.5)
             timestamp = time.now().strftime("%d/%m/%Y %H:%M:%S")
             cadastrados += 1
-            msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao} Incorporado {cadastrados}/{total}\n'
+            msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao_sistema} Incorporado {cadastrados}/{total}\n'
             print(msg)
             log.write(msg)
         else:

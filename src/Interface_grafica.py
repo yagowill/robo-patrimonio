@@ -112,4 +112,4 @@ class Interface_grafica:
                 incorporar(origem=values['-ORGAO-'], ntermo=values['-NTERMO-'], descricao=values['-DESCRICAO-'], patrimonios=self.rps_value, destino=values['-DESTINO-'])
                 
             elif event == 'Receber':
-                receber(strategy='TUDO')
+                receber()

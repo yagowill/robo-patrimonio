@@ -11,10 +11,6 @@ def receber(strategy='TUDO'):
     
     sispat.login(driver)
     sispat.sispatweb(driver)
-    nao_recebidos =  WebDriverWait(driver, timeout=60)\
-        .until(EC.presence_of_element_located((By.CSS_SELECTOR, '#form_pendencias\:panel > table > tbody > tr:last-child > td.col_quantidade > span')))
-    qtd_nao_recebidos = int(nao_recebidos.text)
-    print(f"Quantidade de não recebidos: {qtd_nao_recebidos}")
     sispat.dist_nao_recebido(driver)
     
     match strategy:

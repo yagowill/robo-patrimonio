@@ -1,7 +1,7 @@
 import PySide6.QtWidgets as QtWidgets
 import PySide6.QtCore as QtCore
 import PySide6.QtGui as QtGui
-from src.sispat import SispatAutomation
+from src.governo_digital import GovernoDigital
 from src.incorporar import incorporar
 from src.receber import receber
 from src import db_manager # Import the new database manager
@@ -70,7 +70,7 @@ class PatrimonyApp(QtWidgets.QMainWindow):
         self.destinos = db_manager.get_unidades_localizacao()
         
         self.worker = None
-        self.sispat_automation = SispatAutomation(log_callback=self.append_log)
+        self.sispat_automation = GovernoDigital(log_callback=self.append_log)
 
         self._setup_ui()
         self._connect_signals()

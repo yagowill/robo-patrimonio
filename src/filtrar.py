@@ -1,33 +1,58 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.select import Select
+from playwright.sync_api import Page, TimeoutError
 
-xpath_root = '/html/body/div/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr'
+# O prefixo comum para os 'name'/'id' dos campos dentro do formulário de pesquisa.
+FORM_PREFIX = 'incorporar_bem_destinado_ao_orgao_form_pesq'
 
-xpaths = {
-    "org_origem_path": xpath_root + '/td[1]/fieldset/table[1]/tbody/tr/td[2]/select',
-    "n_termo_path": xpath_root + '/td[1]/fieldset/table[2]/tbody/tr[1]/td[2]/input',
-    "descricao_input_path": '//*[@id="incorporar_bem_destinado_ao_orgao_form_pesq:descricaomaterial"]',
-    "pesquisar_path": xpath_root + '/td[2]/table/tbody/tr/td/table/tbody/tr/td/input[1]'
+locators = {
+    # Seletor exato para o select do Órgão de Origem.
+    "org_origem_select": f'select[name="{FORM_PREFIX}:j_id424"]',
+    
+    # Seletor exato para o campo "Nº do Termo de Transferência".
+    "n_termo_input": f'input[name="{FORM_PREFIX}:descricaobem"]', 
+    
+    # Seletor exato para o campo "Descrição do Bem".
+    "descricao_input": f'input[name="{FORM_PREFIX}:descricaomaterial"]', 
+    
+    # Seletor exato para o botão "Pesquisar", usando o atributo 'name' e 'value'.
+    # Este seletor é agora robusto.
+    "pesquisar_button": f'input[name="{FORM_PREFIX}:j_id437"][value="Pesquisar"]'
 }
 
-def filtrar(driver, origem, ntermo, descricao):
-        orgao_origem_selection = WebDriverWait(driver, timeout=60)\
-            .until(EC.presence_of_element_located((By.XPATH, xpaths['org_origem_path'])))
-        select = Select(orgao_origem_selection)
+def filtrar(page: Page, origem: str, ntermo: str, descricao: str, log_callback=None):
+    _log = log_callback if log_callback else print
+    _log(f"Preenchendo filtros: Origem='{origem}', Nº Termo='{ntermo}', Descrição='{descricao}'")
+
+    try:
+        # Esperamos que o seletor do dropdown esteja visível.
+        page.wait_for_selector(locators["org_origem_select"], state='visible') 
+        _log("Elemento 'Órgão Origem' visível e pronto para interação.")
+
+        # Selecionar o texto visível no dropdown
+        page.select_option(locators["org_origem_select"], label=origem)
+        _log(f"Origem '{origem}' selecionada.")
+
+        # Preencher o número do termo
+        page.fill(locators["n_termo_input"], ntermo)
+        _log(f"Nº Termo '{ntermo}' preenchido.")
+
+        # Preencher a descrição
+        page.fill(locators["descricao_input"], descricao)
+        _log(f"Descrição '{descricao}' preenchida.")
+
+        # Clicar no botão de pesquisa
+        page.click(locators["pesquisar_button"])
         
-        select.select_by_visible_text(origem)
-        
-        n_termo = WebDriverWait(driver, timeout=60)\
-            .until(EC.presence_of_element_located((By.XPATH, xpaths['n_termo_path'])))
-        n_termo.send_keys(ntermo)
-        
-        descricao_input = WebDriverWait(driver, timeout=60)\
-            .until(EC.presence_of_element_located((By.XPATH, xpaths['descricao_input_path'])))
-        descricao_input.send_keys(descricao)
-        
-        pesquisar = WebDriverWait(driver, timeout=60)\
-            .until(EC.presence_of_element_located((By.XPATH, xpaths['pesquisar_path'])))
-        
-        driver.execute_script("arguments[0].click();", pesquisar)
+        # Esperar que o estado da rede fique "ocioso" após a pesquisa,
+        # indicando que os resultados carregaram.
+        page.wait_for_load_state('networkidle') 
+        _log("Botão 'Pesquisar' clicado e resultados carregados.")
+
+    except TimeoutError as e:
+        _log(f"Erro de Timeout ao filtrar: {e}")
+        _log("Não foi possível encontrar ou interagir com um dos elementos do formulário de filtro (Órgão Origem, Nº Termo, Descrição ou botão Pesquisar) dentro do tempo limite.")
+        _log("Por favor, verifique se os seletores CSS em `src/filtrar.py` estão corretos para a página atual do SispatWeb.")
+        _log("Mantenha 'headless=False' em `src/sispat.py` para observar a página no momento do erro.")
+        raise
+    except Exception as e:
+        _log(f"Erro inesperado ao filtrar: {e}")
+        raise

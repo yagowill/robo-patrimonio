@@ -1,10 +1,34 @@
-*.xlsx
-*.json
-*.log
-__pycache__
-build
-dist
-app.spec
-robo-sepat/
-.tool-versionsvenv/ 
-venv
+# Arquivos de ambiente com credenciais e configurações sensíveis
+.env
+
+# Diretórios de ambiente virtual Python
+# Windows
+venv/
+env/
+# macOS/Linux
+.venv/
+
+# Arquivos de cache e de compilação do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Arquivos de log gerados pelo robô
+relatório.log
+
+# Logs do Playwright (se gerados automaticamente)
+# Playwright por padrão baixa browsers para um diretório global ou de cache,
+# mas se ele criar algum arquivo de log localmente, adicione aqui.
+# ex: playwright-debug/
+
+# Arquivos temporários do sistema operacional
+.DS_Store # macOS
+Thumbs.db # Windows
+desktop.ini # Windows

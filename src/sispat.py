@@ -1,61 +1,118 @@
-import json
-from time import sleep
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import os
+from dotenv import load_dotenv
+from playwright.sync_api import sync_playwright, Page, Playwright, TimeoutError
 
-def driver():
-    driver = webdriver.Chrome()
-    driver.implicitly_wait(60)
-    return driver
+class SispatAutomation:
+    def __init__(self, log_callback=None):
+        self._playwright_instance: Playwright = None
+        self.page: Page = None
+        self.log_callback = log_callback if log_callback else print
 
-def login(driver):
-    print("Acessando o Governo Digital...")
-    
-    driver.get('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
-    
-    print("Efetuando o login...")
-    with open("config.json") as file:
-        login = json.load(file)
-    usuario = login["usuario"]
-    senha = login["senha"]
-    
-    login_username = driver.find_element(By.XPATH, '//*[@id="form_login:login_username"]')
-    login_username.send_keys(usuario)
-    
-    login_password = driver.find_element(By.XPATH, '//*[@id="form_login:login_password"]')
-    login_password.send_keys(senha)
-    
-    btn_login = driver.find_element(By.XPATH, '//*[@id="form_login:button_login"]')
-    btn_login.click()
-    
-    print("Login efetuado com sucesso!")
+    def _log(self, message):
+        """Internal logging helper."""
+        self.log_callback(f"[SISPAT] {message}")
 
-def sispatweb(driver):
-    driver.get('https://www.sistemas.pa.gov.br/sispat')
-    print("Acessando o SispatWeb...")
+    def start_browser(self):
+        """Starts Playwright browser and returns a page object."""
+        self._log("Iniciando navegador...")
+        self._playwright_instance = sync_playwright().start()
+        browser = self._playwright_instance.chromium.launch(headless=False) # Keep headless=False for testing
+        context = browser.new_context()
+        self.page = context.new_page()
+        self.page.set_default_timeout(60000) # 60 seconds timeout for all actions
+        self._log("Navegador iniciado.")
+        return self.page
 
+    def stop_browser(self):
+        """Stops the Playwright browser."""
+        if self._playwright_instance:
+            self._log("Fechando navegador...")
+            try:
+                if self.page and not self.page.is_closed():
+                    self.page.close()
+            except Exception as e:
+                self._log(f"Erro ao fechar a página: {e}")
+            self._playwright_instance.stop()
+            self._playwright_instance = None
+            self.page = None
+            self._log("Navegador fechado.")
 
-def nao_incorporado(driver):
-    entrada_por_transferencia_nao_incorporado = driver.find_element(By.XPATH, '//tr/td/a[contains(text(), "Entrada por Transferência Não Incorporado")]')
-    
-    print("Acessando entrada por tranferência não incorporados...")
-    
-    driver.execute_script("arguments[0].click();", entrada_por_transferencia_nao_incorporado)
-    sleep(3.5)
-    
-def dist_nao_recebido(driver):
-    driver.get("https://www.sistemas.pa.gov.br/sispat/movimentacao_bem/recebimento/recebimento_termo_bem_interno_operacional_lista.seam")
-    nao_recebidos = WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[2]/table/tbody/tr/td/input')))
-    nao_recebidos.click()
-    print('Acessando distribuídos não recebidos...')
-    
-def ocorrencia_bens(driver):
-    driver.get("https://www.sistemas.pa.gov.br/sispat/avaliacao_bem/ocorrencia/search.seam")
-    
-def registrar_ocorrencia(driver):
-    btn_novo = WebDriverWait(driver, timeout=60)\
-        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[2]/table/tbody/tr[2]/td/input')))
-    driver.execute_script("arguments[0].click();", btn_novo)
-    sleep(3.5)
+    def login(self):
+        """Performs login to Governo Digital and SispatWeb."""
+        self._log("Acessando o Governo Digital...")
+        self.page.goto('https://www.sistemas.pa.gov.br/governodigital/public/main/index.xhtml')
+
+        self._log("Lendo credenciais do .env...")
+        load_dotenv() # Load variables from .env file into the environment
+        
+        # Access variables from the environment
+        usuario = os.getenv("SISPAT_USUARIO")
+        senha = os.getenv("SISPAT_SENHA")
+
+        if not usuario or not senha:
+            self._log("ERRO: Credenciais SISPAT_USUARIO ou SISPAT_SENHA não encontradas.")
+            self._log("Certifique-se de que o arquivo .env está na raiz do projeto com as linhas:")
+            self._log("SISPAT_USUARIO=seu_usuario_aqui")
+            self._log("SISPAT_SENHA=sua_senha_aqui")
+            raise ValueError("Credenciais SISPAT_USUARIO ou SISPAT_SENHA não definidas no ambiente.")
+
+        self._log("Efetuando o login...")
+        try:
+            self.page.fill('input[id="form_login:login_username"]', usuario)
+            self.page.fill('input[id="form_login:login_password"]', senha)
+            self.page.click('a[id="form_login:button_login"]') 
+            sispat_link_selector_gov_digital = 'a[href="/sispat"][title="SispatWeb"]'
+            self.page.wait_for_selector(sispat_link_selector_gov_digital) 
+            self._log("Login no Governo Digital efetuado com sucesso!")
+        except TimeoutError:
+            self._log("Erro de Timeout ao clicar no botão de login ou ao aguardar o link 'SispatWeb' na página inicial do Governo Digital.")
+            self._log("Possíveis causas: ")
+            self._log("  - O seletor do botão de login está incorreto.")
+            self._log("  - Credenciais de login inválidas.")
+            self._log("  - O link 'SispatWeb' não apareceu na página principal do Governo Digital após o login.")
+            self._log("  - Problemas de rede ou carregamento lento.")
+            raise 
+
+        self._log("Acessando o SispatWeb...")
+        self.page.goto('https://www.sistemas.pa.gov.br/sispat')
+        
+        try:
+            self.page.wait_for_selector('text="Entrada por Transferência Não Incorporado"', timeout=30000) 
+            self._log("Página principal do SispatWeb acessada com sucesso!")
+        except TimeoutError:
+            self._log("Erro de Timeout ao aguardar o elemento na página principal do SispatWeb.")
+            self._log("Isso pode indicar que a navegação para o SispatWeb não foi concluída com sucesso ou que o seletor para o elemento de verificação ('Entrada por Transferência Não Incorporado') está incorreto para esta página.")
+            self._log("Verifique a URL final e o conteúdo da página para um seletor mais adequado.")
+            raise 
+
+    def navigate_to_nao_incorporado(self):
+        """Navigates to the 'Entrada por Transferência Não Incorporado' page."""
+        self._log("Acessando entrada por transferência não incorporados...")
+        self.page.click('text="Entrada por Transferência Não Incorporado"')
+        self.page.wait_for_url('**/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam')
+        self._log("Página de não incorporados acessada.")
+
+    def navigate_to_dist_nao_recebido(self):
+        """Navigates to the 'Distribuídos Não Recebidos' page and performs an initial search."""
+        self._log("Acessando distribuídos não recebidos...")
+        
+        self.page.goto("https://www.sistemas.pa.gov.br/sispat/movimentacao_bem/recebimento/recebimento_termo_bem_interno_operacional_lista.seam")
+        
+        try:
+            self.page.wait_for_selector('text="Receber Termo de Empréstimo e Transferência Interna"', timeout=30000)
+            self._log("Página 'Receber Termo de Movimentação' acessada com sucesso.")
+        except TimeoutError:
+            self._log("Erro de Timeout ao aguardar o texto de cabeçalho na página de 'Distribuídos Não Recebidos'.")
+            self._log("Verifique se o texto 'Receber Termo de Empréstimo e Transferência Interna' está presente na página.")
+            raise 
+
+        pesquisar_button_selector = 'input[type="submit"][value="Pesquisar"]'
+        
+        try:
+            self.page.click(pesquisar_button_selector)
+            self.page.wait_for_load_state('networkidle') 
+            self._log("Pesquisa inicial na página de distribuídos não recebidos realizada.")
+        except TimeoutError:
+            self._log(f"Timeout ao tentar clicar no botão Pesquisar ({pesquisar_button_selector}) na página de distribuídos não recebidos.")
+            self._log("Verifique se o botão 'Pesquisar' existe com este seletor ou se a página carregou corretamente após a navegação.")
+            raise 

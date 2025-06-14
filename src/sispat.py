@@ -2,7 +2,6 @@ import json
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -54,10 +53,16 @@ def nao_incorporado(driver):
     sleep(3.5)
     
 def dist_nao_recebido(driver):
-    dist_nao_recebido = WebDriverWait(driver, timeout=60)\
-        .until(EC.presence_of_element_located((By.XPATH, '//tr/td/a[contains(text(), "Distribuído Não Recebido")]')))
-    
+    driver.get("https://www.sistemas.pa.gov.br/sispat/movimentacao_bem/recebimento/recebimento_termo_bem_interno_operacional_lista.seam")
+    nao_recebidos = WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[2]/table/tbody/tr/td/input')))
+    nao_recebidos.click()
     print('Acessando distribuídos não recebidos...')
     
-    driver.execute_script("arguments[0].click();", dist_nao_recebido)
+def ocorrencia_bens(driver):
+    driver.get("https://www.sistemas.pa.gov.br/sispat/avaliacao_bem/ocorrencia/search.seam")
+    
+def registrar_ocorrencia(driver):
+    btn_novo = WebDriverWait(driver, timeout=60)\
+        .until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[1]/table/tbody/tr/td[3]/div/form[1]/div/div/div/table/tbody/tr/td[2]/table/tbody/tr[2]/td/input')))
+    driver.execute_script("arguments[0].click();", btn_novo)
     sleep(3.5)

@@ -46,15 +46,15 @@ class GovernoDigital:
         load_dotenv() # Load variables from .env file into the environment
         
         # Access variables from the environment
-        usuario = os.getenv("SISPAT_USUARIO")
-        senha = os.getenv("SISPAT_SENHA")
+        usuario = os.getenv("GOVERNO_DIGITAL_USUARIO")
+        senha = os.getenv("GOVERNO_DIGITAL_SENHA")
 
         if not usuario or not senha:
-            self._log("ERRO: Credenciais SISPAT_USUARIO ou SISPAT_SENHA não encontradas.")
+            self._log("ERRO: Credenciais GOVERNO_DIGITAL_USUARIO ou GOVERNO_DIGITAL_SENHA não encontradas.")
             self._log("Certifique-se de que o arquivo .env está na raiz do projeto com as linhas:")
-            self._log("SISPAT_USUARIO=seu_usuario_aqui")
-            self._log("SISPAT_SENHA=sua_senha_aqui")
-            raise ValueError("Credenciais SISPAT_USUARIO ou SISPAT_SENHA não definidas no ambiente.")
+            self._log("GOVERNO_DIGITAL_USUARIO=seu_usuario_aqui")
+            self._log("GOVERNO_DIGITAL_SENHA=sua_senha_aqui")
+            raise ValueError("Credenciais GOVERNO_DIGITAL_USUARIO ou GOVERNO_DIGITAL_SENHA não definidas no ambiente.")
 
         self._log("Efetuando o login...")
         try:

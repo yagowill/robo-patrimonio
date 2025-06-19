@@ -1,6 +1,5 @@
 import PySide6.QtWidgets as QtWidgets
 import PySide6.QtCore as QtCore
-import PySide6.QtGui as QtGui
 from src.governo_digital import GovernoDigital
 from src.incorporar import incorporar
 from src.receber import receber

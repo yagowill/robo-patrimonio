@@ -17,8 +17,8 @@ class GovernoDigital:
         self._log("Iniciando navegador...")
         self._playwright_instance = sync_playwright().start()
         browser = self._playwright_instance.chromium.launch(headless=False) # Keep headless=False for testing
-        context = browser.new_context()
-        self.page = context.new_page()
+        self.context = browser.new_context() # Load storage state from file
+        self.page = self.context.new_page()
         self.page.set_default_timeout(60000) # 60 seconds timeout for all actions
         self._log("Navegador iniciado.")
         return self.page
@@ -62,7 +62,7 @@ class GovernoDigital:
             self.page.fill('input[id="form_login:login_password"]', senha)
             self.page.click('a[id="form_login:button_login"]') 
             sispat_link_selector_gov_digital = 'a[href="/sispat"][title="SispatWeb"]'
-            self.page.wait_for_selector(sispat_link_selector_gov_digital) 
+            self.page.wait_for_selector(sispat_link_selector_gov_digital)
             self._log("Login no Governo Digital efetuado com sucesso!")
         except TimeoutError:
             self._log("Erro de Timeout ao clicar no botão de login ou ao aguardar o link 'SispatWeb' na página inicial do Governo Digital.")
@@ -89,7 +89,7 @@ class GovernoDigital:
         """Navigates to the 'Entrada por Transferência Não Incorporado' page."""
         self._log("Acessando entrada por transferência não incorporados...")
         self.page.click('text="Entrada por Transferência Não Incorporado"')
-        self.page.wait_for_url('**/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam')
+        self.page.wait_for_selector('#incorporar_bem_destinado_ao_orgao_form_lista', timeout=30000)
         self._log("Página de não incorporados acessada.")
 
     def navigate_to_dist_nao_recebido(self):

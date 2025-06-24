@@ -36,7 +36,9 @@ class AutomationWorker(QtCore.QThread):
                     descricao=self.kwargs['descricao'],
                     patrimonios=self.kwargs['patrimonios'],
                     destino=self.kwargs['destino'],
-                    log_callback=self.log_signal.emit
+                    log_callback=self.log_signal.emit,
+                    usar_serial=self.kwargs.get('usar_serial', False),
+                    serial_regex=self.kwargs.get('serial_regex', '')  # <-- Adicionado aqui
                 )
             elif self.task_type == "receber":
                 self.sispat_automation.navigate_to_dist_nao_recebido()
@@ -113,6 +115,15 @@ class PatrimonyApp(QtWidgets.QMainWindow):
         left_column.addStretch() # Push buttons to bottom
 
         button_layout = QtWidgets.QHBoxLayout()
+        # Checkbox for using serial number
+        self.use_serial_checkbox = QtWidgets.QCheckBox('Usar número de série do sistema')
+        left_column.addWidget(self.use_serial_checkbox)
+
+        # Campo para expressão regular do número de série
+        self.serial_regex_input = QtWidgets.QLineEdit()
+        self.serial_regex_input.setPlaceholderText('Regex para tratar número de série (opcional)')
+        left_column.addWidget(self.serial_regex_input)
+
         self.clear_button = QtWidgets.QPushButton('Limpar')
         self.clear_button.setStyleSheet("background-color: gray; color: white;")
         self.remove_button = QtWidgets.QPushButton('Remover')
@@ -120,11 +131,13 @@ class PatrimonyApp(QtWidgets.QMainWindow):
         self.incorporar_button = QtWidgets.QPushButton('Incorporar')
         self.incorporar_button.setStyleSheet("background-color: green; color: white;")
 
+        button_layout.addWidget(self.use_serial_checkbox)
         button_layout.addStretch()
         button_layout.addWidget(self.clear_button)
         button_layout.addWidget(self.remove_button)
         button_layout.addWidget(self.incorporar_button)
         left_column.addLayout(button_layout)
+
 
         main_layout.addLayout(left_column)
 
@@ -168,6 +181,10 @@ class PatrimonyApp(QtWidgets.QMainWindow):
         # Add bottom layout to main layout
         main_layout.addLayout(bottom_layout)
 
+        # Desabilita o campo de regex inicialmente
+        self.serial_regex_input.setEnabled(False)
+        # Habilita/desabilita o campo de regex conforme o checkbox
+        self.use_serial_checkbox.toggled.connect(self.serial_regex_input.setEnabled)
 
     def _connect_signals(self):
         self.add_rp_button.clicked.connect(self._add_rp)
@@ -284,7 +301,9 @@ class PatrimonyApp(QtWidgets.QMainWindow):
             ntermo=self.ntermo_input.text(),
             descricao=self.descricao_input.text(),
             patrimonios=self.rps_value,
-            destino=self.destino_combo.currentText()
+            destino=self.destino_combo.currentText(),
+            usar_serial=self.use_serial_checkbox.isChecked(),
+            serial_regex=self.serial_regex_input.text()  # <-- Adicionado aqui
         )
         self.worker.log_signal.connect(self.append_log)
         self.worker.finished_signal.connect(self._on_automation_finished)

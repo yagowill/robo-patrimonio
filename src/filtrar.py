@@ -23,20 +23,28 @@ def filtrar(page: Page, origem: str, ntermo: str, descricao: str, log_callback=N
     _log(f"Preenchendo filtros: Origem='{origem}', Nº Termo='{ntermo}', Descrição='{descricao}'")
 
     try:
+        # Esperamos que o seletor do dropdown esteja visível.
+        page.wait_for_selector(locators["org_origem_select"], state='visible') 
+        _log("Elemento 'Órgão Origem' visível e pronto para interação.")
+
         # Selecionar o texto visível no dropdown
-        page.locator(locators["org_origem_select"]).select_option(label=origem)
+        page.select_option(locators["org_origem_select"], label=origem)
         _log(f"Origem '{origem}' selecionada.")
 
         # Preencher o número do termo
-        page.locator(locators["n_termo_input"]).fill(ntermo)
+        page.fill(locators["n_termo_input"], ntermo)
         _log(f"Nº Termo '{ntermo}' preenchido.")
 
         # Preencher a descrição
-        page.locator(locators["descricao_input"]).fill(descricao)
+        page.fill(locators["descricao_input"], descricao)
         _log(f"Descrição '{descricao}' preenchida.")
 
         # Clicar no botão de pesquisa
-        page.locator(locators["pesquisar_button"]).click()
+        page.click(locators["pesquisar_button"])
+        
+        # Esperar que o estado da rede fique "ocioso" após a pesquisa,
+        # indicando que os resultados carregaram.
+        page.wait_for_load_state('networkidle') 
         _log("Botão 'Pesquisar' clicado e resultados carregados.")
 
     except TimeoutError as e:

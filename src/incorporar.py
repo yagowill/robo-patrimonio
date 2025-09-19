@@ -1,31 +1,34 @@
-from playwright.sync_api import Page, TimeoutError # Changed PlaywrightTimeoutError to TimeoutError
+from playwright.sync_api import Page, TimeoutError
 from datetime import datetime
+import re
 
 
 # Centralized locators for incorporation process
 incorporation_locators = {
-    "select_bem_link": 'a[id*="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:0:incorporarbens"]', 
-    "description_text": '//form[2]/span/table/tbody/tr[1]/td[3]', 
-    "rp_input": 'input[id*="incorporar_bem_destinado_ao_orgao_form_cad:rpInicial"]',
-    "search_unidade_button": 'input[value="Pesquisar"][id*="incorporar_bem_destinado_ao_orgao_form_cad:selecionarunidadelocalizacaodestino"]',
+    "select_bem_link": 'a[id="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:0:incorporarbens"]',
+    "description_text": 'td[id="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:0:j_id445"]',
+    "serial_number_text": '//*[@id="incorporar_bem_destinado_ao_orgao_form_cad:j_id415_body"]/table[8]/tbody/tr[4]/td[2]/span',
+    "rp_input": 'input[type="text"][name="incorporar_bem_destinado_ao_orgao_form_cad:j_id434"]',
+    "search_ul_button": 'input[id="incorporar_bem_destinado_ao_orgao_form_cad:selecionarunidadelocalizacaodestino"][name="incorporar_bem_destinado_ao_orgao_form_cad:selecionarunidadelocalizacaodestino"][value="Pesquisar"][title="Localizar Unidade de Localização de Destino"][type="button"]',
     "destino_search_input": 'input[name="modal_searchUnidadeDestino_unidade_search_form:j_id770"]',
     "destino_search_button": 'input[value="Pesquisar"][id*="modal_searchUnidadeDestino_unidade_search_form:j_id778"]',
-    "select_destino_link": 'a[id*="modal_searchUnidadeDestino_unidade_search_form:unidadesearchUnidadeDestino:0:confirmacaoorigem"]', 
-    "confirm_button": 'input[id*="incorporar_bem_destinado_ao_orgao_form_cad:Incorporar"]',
+    "select_destino_link": 'a[href="#"][id="modal_searchUnidadeDestino_unidade_search_form:unidadesearchUnidadeDestino:0:confirmacaoorigem"][name="modal_searchUnidadeDestino_unidade_search_form:unidadesearchUnidadeDestino:0:confirmacaoorigem"]',
+    "confirm_button": 'input[id="incorporar_bem_destinado_ao_orgao_form_cad:Incorporar"][name="incorporar_bem_destinado_ao_orgao_form_cad:Incorporar"][value="Incorporar"][type="button"]',
     "success_message": 'span:has-text("Bem foi incorporado ao órgão com sucesso.")',
     "imprimir_depois_button": 'input[id*="incorporar_bem_destinado_ao_orgao_form_lista:cancelaimpressao"]',
-    "error_message_span": 'div.erros > table > tbody > tr > td > span',
-    "cancel_button": 'input[value="Cancelar"]'
+    "error_message_span": 'table[id="j_id407"] > tbody > tr > td > span[class="rich-messages-label"]',
+    "cancel_button": 'input[id="incorporar_bem_destinado_ao_orgao_form_cad:voltar"][value="Cancelar"][type="button"]'
 }
 
-def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios: list, destino: str, log_callback=None):
-    _log = log_callback if log_callback else print
+def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios: list, destino: str, log_callback=None, usar_serial=False, serial_regex=''):
+    _log = print #log_callback if log_callback else print
     from src.filtrar import filtrar # Import here to avoid circular dependency
 
     _log("Iniciando processo de incorporação...")
 
     cadastrados = 0
-    total = len(patrimonios)
+    resultados = page.locator('//*[@id="j_id407"]/tbody/tr/td/span[2]').text_content().split()[3]
+    total = len(patrimonios) if not usar_serial else int(resultados)
     log_file_path = 'relatório.log'
 
     # Open log file once for appending
@@ -36,40 +39,128 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
         except Exception as e:
             _log(f"Erro na filtragem inicial: {e}")
             return # Stop if initial filter fails
-
-        for i, rp in enumerate(patrimonios):
-            _log(f"Processando patrimônio {i+1}/{total}: {rp}")
-            try:
-                # Wait for the table to be visible and then the 'Selecionar Bem' link
-                page.wait_for_selector('table[id*="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios"]')
-                
-                # Check if there are any results before trying to select
+        if not usar_serial:
+            for i, rp in enumerate(patrimonios):
+                _log(f"Processando patrimônio {i+1}/{total}: {rp}")
                 try:
-                    # Assuming 'Selecionar Bem' is always on the first row for the items we want to process
-                    # This locator is still somewhat brittle; ideally, we'd find the row by RP number
-                    # For now, stick to original logic which assumes the first result is the target.
-                    # A better way would be to filter the table data for the specific RP.
-                    # Since the original code iterated on `patrimonios` after filtering by description,
-                    # it implies the list on screen *should* correspond to what's in `patrimonios`.
-                    # However, the current flow clicks the 'selecionar_ben_btn' on a fixed first row.
-                    # This means it will only incorporate the *first item* on the list for *every RP*.
-                    # This is a critical flaw in the original design if `patrimonios` contains multiple RPs
-                    # that appear *sequentially* in the filtered list.
-                    # To fix this, we need to iterate through the displayed table rows.
+                    try:
+                        selecionar_bem_link_locator = page.locator(incorporation_locators["select_bem_link"])
+                        descricao_sistema_locator = page.locator(incorporation_locators["description_text"])
 
-                    # Let's assume for simplicity and to match the original *behavior* that
-                    # the first row of the filtered list is the one to be acted upon.
-                    # If this is not the case, a more complex table iteration logic is needed.
+                        # Get description from the table before clicking
+                        descricao_sistema = descricao_sistema_locator.text_content().strip()
+                        _log(f"Descrição do sistema encontrado: '{descricao_sistema}'")
 
-                    selecionar_bem_link_locator = page.locator(incorporation_locators["select_bem_link"]).first
-                    descricao_sistema_locator = page.locator(incorporation_locators["description_text"]).first
+                        selecionar_bem_link_locator.click()
+                        serial_number = page.locator(incorporation_locators["serial_number_text"]).text_content().strip()
+                        _log(f"Número de serie do sistema encontrado: '{serial_number}'")
 
-                    # Get description from the table before clicking
+                        
+
+                        # Preenche o campo RP com o serial tratado ou original
+                        page.locator(incorporation_locators["rp_input"]).fill(str(rp))
+                        page.locator(incorporation_locators["search_ul_button"]).click()
+
+                        # Fill destination
+                        page.locator(incorporation_locators["destino_search_input"]).fill(destino)
+                        page.locator(incorporation_locators["destino_search_button"]).click()
+                        
+
+                        # Select destination from results
+                        page.locator(incorporation_locators["select_destino_link"]).click()
+                        # Wait for the modal/popup to close or the page to update
+                        page.wait_for_selector(incorporation_locators["confirm_button"])
+
+                        # Confirm incorporation
+                        page.locator(incorporation_locators["confirm_button"]).click()
+                        
+
+                        # Check confirmation message
+                        if page.locator(incorporation_locators["success_message"]).is_visible():
+                            timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                            cadastrados += 1
+                            msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao_sistema} Incorporado {cadastrados}/{total}\n'
+                            _log(msg.strip())
+                            log.write(msg)
+                            
+                            # Click "Imprimir depois" button
+                            page.click(incorporation_locators["imprimir_depois_button"])
+                            
+                            # After "Imprimir depois", it usually returns to the list.
+                            # Re-filter to ensure the list is fresh for the next iteration.
+                            filtrar(page, origem, ntermo, descricao, _log)
+
+                        else:
+                            error_msg_elem = page.locator(incorporation_locators["error_message_span"])
+                            error_text = error_msg_elem.text_content().strip()
+                            timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                            msg = f"{timestamp} - ERRO ao incorporar Patrimônio {rp}: {error_text}\n"
+                            _log(msg.strip())
+                            log.write(msg)
+                            
+                            # If there was an error, click "Cancelar" or navigate back to the list
+                            try:
+                                page.click(incorporation_locators["cancel_button"])
+                                
+                                # After cancel, it should return to the main list
+                                # Re-filter for the next item
+                                filtrar(page, origem, ntermo, descricao, _log)
+                            except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
+                                _log(f"Não foi possível clicar em 'Cancelar' para {rp}, tentando re-filtrar...")
+                                page.goto('https://www.sistemas.pa.gov.br/sispat')
+                                page.click('text="Entrada por Transferência Não Incorporado"')
+                                filtrar(page, origem, ntermo, descricao, _log)
+
+
+                    except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
+                        msg = f"Patrimônio {rp} (ou link 'Selecionar Bem' para ele) não encontrado na lista filtrada. Verifique os filtros ou se o item já foi incorporado.\n"
+                        _log(msg.strip())
+                        log.write(msg)
+                        # No need to filter again, just continue to next RP
+                        # If this happens consistently, the filter might be wrong or the item isn't there.
+                        # We continue to avoid stopping the entire batch.
+
+                except Exception as e:
+                    timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                    msg = f"{timestamp} - ERRO crítico ao processar Patrimônio {rp}: {e}\n"
+                    _log(msg.strip())
+                    log.write(msg)
+                    # Attempt to return to the list for the next item, might fail
+                    try:
+                        page.goto('https://www.sistemas.pa.gov.br/sispat')
+                        page.click('text="Entrada por Transferência Não Incorporado"')
+                        filtrar(page, origem, ntermo, descricao, _log)
+                    except Exception as nav_err:
+                        _log(f"Erro ao tentar navegar de volta para a lista: {nav_err}")
+                        _log("Processo de incorporação pode estar em estado inconsistente. Recomenda-se reiniciar.")
+                        break # Stop if we can't even get back to the list
+        else:
+            while True:
+                try:
+                    # Tenta localizar o primeiro bem da lista filtrada
+                    selecionar_bem_link_locator = page.locator(incorporation_locators["select_bem_link"])
+                    if not selecionar_bem_link_locator.is_visible():
+                        _log("Nenhum bem restante para incorporar na lista filtrada.")
+                        break
+
+                    descricao_sistema_locator = page.locator(incorporation_locators["description_text"])
                     descricao_sistema = descricao_sistema_locator.text_content().strip()
-                    _log(f"Descrição do sistema para o primeiro item encontrado: '{descricao_sistema}'")
+                    _log(f"Descrição do sistema encontrado: '{descricao_sistema}'")
 
                     selecionar_bem_link_locator.click()
-                    page.wait_for_selector(incorporation_locators["rp_input"]) # Wait for the RP input field to appear
+                    serial_number = page.locator(incorporation_locators["serial_number_text"]).text_content().strip()
+                    _log(f"Número de série do sistema encontrado: '{serial_number}'")
+                    
+                    # Aplica regex se fornecida
+                    serial_para_usar = serial_number
+                    if usar_serial and serial_regex:
+                        match = re.search(serial_regex, serial_number.replace("\\", "\\\\"))  # Escape backslashes for regex
+                        _log(f"Aplicando regex '{serial_regex}' no número de série: '{serial_number}'")
+                        if match:
+                            serial_para_usar = match.group(1)
+                            _log(f"Número de série tratado pela regex: '{serial_para_usar}'")
+                        else:
+                            _log(f"Regex '{serial_regex}' não encontrou correspondência. Usando número de série original.")
 
                     # Fill RP number in the popup/new page
                     page.fill(incorporation_locators["rp_input"], str(rp))
@@ -96,57 +187,41 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
                         page.wait_for_selector(incorporation_locators["imprimir_depois_button"])
                         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                         cadastrados += 1
-                        msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao_sistema} Incorporado {cadastrados}/{total}\n'
+                        msg = f'{timestamp} - Serial: {serial_number} Descrição: {descricao_sistema} Incorporado {cadastrados}\n'
                         _log(msg.strip())
                         log.write(msg)
-                        
-                        # Click "Imprimir depois" button
                         page.click(incorporation_locators["imprimir_depois_button"])
-                        page.wait_for_load_state('networkidle')
-                        # After "Imprimir depois", it usually returns to the list.
-                        # Re-filter to ensure the list is fresh for the next iteration.
                         filtrar(page, origem, ntermo, descricao, _log)
 
                     except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
                         error_msg_elem = page.locator(incorporation_locators["error_message_span"])
-                        error_text = error_msg_elem.text_content().strip() if error_msg_elem.is_visible() else "Mensagem de erro genérica não encontrada."
+                        error_text = error_msg_elem.text_content().strip()
                         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                        msg = f"{timestamp} - ERRO ao incorporar Patrimônio {rp}: {error_text}\n"
+                        msg = f"{timestamp} - ERRO ao incorporar Serial {serial_number}: {error_text}\n"
                         _log(msg.strip())
                         log.write(msg)
-                        
-                        # If there was an error, click "Cancelar" or navigate back to the list
                         try:
                             page.click(incorporation_locators["cancel_button"])
-                            page.wait_for_load_state('networkidle')
-                            # After cancel, it should return to the main list
-                            # Re-filter for the next item
                             filtrar(page, origem, ntermo, descricao, _log)
-                        except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
-                            _log(f"Não foi possível clicar em 'Cancelar' para {rp}, tentando re-filtrar...")
+                        except TimeoutError:
+                            _log(f"Não foi possível clicar em 'Cancelar' para {serial_number}, tentando re-filtrar...")
+                            page.goto('https://www.sistemas.pa.gov.br/sispat')
+                            page.click('text=\"Entrada por Transferência Não Incorporado\"')
                             filtrar(page, origem, ntermo, descricao, _log)
-
-
-                except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
-                    msg = f"Patrimônio {rp} (ou link 'Selecionar Bem' para ele) não encontrado na lista filtrada. Verifique os filtros ou se o item já foi incorporado.\n"
+                except TimeoutError:
+                    _log("Nenhum bem encontrado na lista filtrada ou erro de timeout.")
+                    break
+                except Exception as e:
+                    timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                    msg = f"{timestamp} - ERRO crítico ao processar Serial: {e}\n"
                     _log(msg.strip())
                     log.write(msg)
-                    # No need to filter again, just continue to next RP
-                    # If this happens consistently, the filter might be wrong or the item isn't there.
-                    # We continue to avoid stopping the entire batch.
-
-            except Exception as e:
-                timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                msg = f"{timestamp} - ERRO crítico ao processar Patrimônio {rp}: {e}\n"
-                _log(msg.strip())
-                log.write(msg)
-                # Attempt to return to the list for the next item, might fail
-                try:
-                    page.goto("https://www.sistemas.pa.gov.br/sispat/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam")
-                    filtrar(page, origem, ntermo, descricao, _log)
-                except Exception as nav_err:
-                    _log(f"Erro ao tentar navegar de volta para a lista: {nav_err}")
-                    _log("Processo de incorporação pode estar em estado inconsistente. Recomenda-se reiniciar.")
-                    break # Stop if we can't even get back to the list
-
+                    try:
+                        page.goto('https://www.sistemas.pa.gov.br/sispat')
+                        page.click('text=\"Entrada por Transferência Não Incorporado\"')
+                        filtrar(page, origem, ntermo, descricao, _log)
+                    except Exception as nav_err:
+                        _log(f"Erro ao tentar navegar de volta para a lista: {nav_err}")
+                        _log("Processo de incorporação pode estar em estado inconsistente. Recomenda-se reiniciar.")
+                        break    
     _log(f"Processo de incorporação finalizado. {cadastrados}/{total} patrimônios incorporados.")

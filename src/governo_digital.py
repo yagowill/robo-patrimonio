@@ -17,8 +17,8 @@ class GovernoDigital:
         self._log("Iniciando navegador...")
         self._playwright_instance = sync_playwright().start()
         browser = self._playwright_instance.chromium.launch(headless=False) # Keep headless=False for testing
-        context = browser.new_context()
-        self.page = context.new_page()
+        self.context = browser.new_context() # Load storage state from file
+        self.page = self.context.new_page()
         self.page.set_default_timeout(60000) # 60 seconds timeout for all actions
         self._log("Navegador iniciado.")
         return self.page
@@ -46,15 +46,15 @@ class GovernoDigital:
         load_dotenv() # Load variables from .env file into the environment
         
         # Access variables from the environment
-        usuario = os.getenv("SISPAT_USUARIO")
-        senha = os.getenv("SISPAT_SENHA")
+        usuario = os.getenv("GOVERNO_DIGITAL_USUARIO")
+        senha = os.getenv("GOVERNO_DIGITAL_SENHA")
 
         if not usuario or not senha:
-            self._log("ERRO: Credenciais SISPAT_USUARIO ou SISPAT_SENHA não encontradas.")
+            self._log("ERRO: Credenciais GOVERNO_DIGITAL_USUARIO ou GOVERNO_DIGITAL_SENHA não encontradas.")
             self._log("Certifique-se de que o arquivo .env está na raiz do projeto com as linhas:")
-            self._log("SISPAT_USUARIO=seu_usuario_aqui")
-            self._log("SISPAT_SENHA=sua_senha_aqui")
-            raise ValueError("Credenciais SISPAT_USUARIO ou SISPAT_SENHA não definidas no ambiente.")
+            self._log("GOVERNO_DIGITAL_USUARIO=seu_usuario_aqui")
+            self._log("GOVERNO_DIGITAL_SENHA=sua_senha_aqui")
+            raise ValueError("Credenciais GOVERNO_DIGITAL_USUARIO ou GOVERNO_DIGITAL_SENHA não definidas no ambiente.")
 
         self._log("Efetuando o login...")
         try:
@@ -62,7 +62,7 @@ class GovernoDigital:
             self.page.fill('input[id="form_login:login_password"]', senha)
             self.page.click('a[id="form_login:button_login"]') 
             sispat_link_selector_gov_digital = 'a[href="/sispat"][title="SispatWeb"]'
-            self.page.wait_for_selector(sispat_link_selector_gov_digital) 
+            self.page.wait_for_selector(sispat_link_selector_gov_digital)
             self._log("Login no Governo Digital efetuado com sucesso!")
         except TimeoutError:
             self._log("Erro de Timeout ao clicar no botão de login ou ao aguardar o link 'SispatWeb' na página inicial do Governo Digital.")
@@ -89,7 +89,7 @@ class GovernoDigital:
         """Navigates to the 'Entrada por Transferência Não Incorporado' page."""
         self._log("Acessando entrada por transferência não incorporados...")
         self.page.click('text="Entrada por Transferência Não Incorporado"')
-        #self.page.wait_for_url('**/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam')
+        self.page.wait_for_selector('#incorporar_bem_destinado_ao_orgao_form_lista', timeout=30000)
         self._log("Página de não incorporados acessada.")
 
     def navigate_to_dist_nao_recebido(self):

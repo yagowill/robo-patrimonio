@@ -4,17 +4,17 @@ from datetime import datetime
 
 # Centralized locators for incorporation process
 incorporation_locators = {
-    "select_bem_link": 'a:has-text("Selecionar Bem")', # More semantic than brittle XPATH
-    "description_text": '//form[2]/span/table/tbody/tr[1]/td[3]', # Still XPath for specific table cell text
-    "rp_input": 'input[id*="pesquisabem:nrorp"]',
-    "search_rp_button": 'input[value="Pesquisar"][name*="pesquisabem"]',
-    "destino_search_input": 'input[id*="pesquisaorgao:pesquisarUnidadeOrganizacionalNome"]',
-    "destino_search_button": 'input[value="Pesquisar"][name*="pesquisaorgao"]',
-    "select_destino_link": 'a:has-text("Selecionar")', # Assumes "Selecionar" for destination in popup
-    "confirm_button": 'input[value="Confirmar"]',
+    "select_bem_link": 'a[id*="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios:0:incorporarbens"]', 
+    "description_text": '//form[2]/span/table/tbody/tr[1]/td[3]', 
+    "rp_input": 'input[id*="incorporar_bem_destinado_ao_orgao_form_cad:rpInicial"]',
+    "search_unidade_button": 'input[value="Pesquisar"][id*="incorporar_bem_destinado_ao_orgao_form_cad:selecionarunidadelocalizacaodestino"]',
+    "destino_search_input": 'input[name="modal_searchUnidadeDestino_unidade_search_form:j_id770"]',
+    "destino_search_button": 'input[value="Pesquisar"][id*="modal_searchUnidadeDestino_unidade_search_form:j_id778"]',
+    "select_destino_link": 'a[id*="modal_searchUnidadeDestino_unidade_search_form:unidadesearchUnidadeDestino:0:confirmacaoorigem"]', 
+    "confirm_button": 'input[id*="incorporar_bem_destinado_ao_orgao_form_cad:Incorporar"]',
     "success_message": 'span:has-text("Bem foi incorporado ao órgão com sucesso.")',
-    "imprimir_depois_button": 'input[value="Imprimir depois"]',
-    "error_message_span": 'div.erros > table > tbody > tr > td > span', # Generic error message location
+    "imprimir_depois_button": 'input[id*="incorporar_bem_destinado_ao_orgao_form_lista:cancelaimpressao"]',
+    "error_message_span": 'div.erros > table > tbody > tr > td > span',
     "cancel_button": 'input[value="Cancelar"]'
 }
 
@@ -41,7 +41,7 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
             _log(f"Processando patrimônio {i+1}/{total}: {rp}")
             try:
                 # Wait for the table to be visible and then the 'Selecionar Bem' link
-                page.wait_for_selector('table[id*="form_pesq:tableBensNaoIncorporados"]')
+                page.wait_for_selector('table[id*="incorporar_bem_destinado_ao_orgao_form_lista:patrimonios"]')
                 
                 # Check if there are any results before trying to select
                 try:
@@ -73,25 +73,27 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
 
                     # Fill RP number in the popup/new page
                     page.fill(incorporation_locators["rp_input"], str(rp))
-                    page.click(incorporation_locators["search_rp_button"])
-                    page.wait_for_load_state('networkidle') # Wait for search results inside the modal/form
 
                     # Fill destination
+                    page.click(incorporation_locators["search_unidade_button"])
                     page.fill(incorporation_locators["destino_search_input"], destino)
                     page.click(incorporation_locators["destino_search_button"])
                     page.wait_for_load_state('networkidle')
 
                     # Select destination from results
                     page.click(incorporation_locators["select_destino_link"])
+                    page.wait_for_load_state('networkidle')
                     # Wait for the modal/popup to close or the page to update
                     page.wait_for_selector(incorporation_locators["confirm_button"])
+                    page.wait_for_load_state('networkidle')
 
                     # Confirm incorporation
                     page.click(incorporation_locators["confirm_button"])
                     page.wait_for_load_state('networkidle')
 
                     # Check confirmation message
-                    if page.locator(incorporation_locators["success_message"]).is_visible():
+                    try:
+                        page.wait_for_selector(incorporation_locators["imprimir_depois_button"])
                         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                         cadastrados += 1
                         msg = f'{timestamp} - Patrimônio: {rp} Descrição: {descricao_sistema} Incorporado {cadastrados}/{total}\n'
@@ -105,7 +107,7 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
                         # Re-filter to ensure the list is fresh for the next iteration.
                         filtrar(page, origem, ntermo, descricao, _log)
 
-                    else:
+                    except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
                         error_msg_elem = page.locator(incorporation_locators["error_message_span"])
                         error_text = error_msg_elem.text_content().strip() if error_msg_elem.is_visible() else "Mensagem de erro genérica não encontrada."
                         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")

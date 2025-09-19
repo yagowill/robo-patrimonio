@@ -89,7 +89,7 @@ class GovernoDigital:
         """Navigates to the 'Entrada por Transferência Não Incorporado' page."""
         self._log("Acessando entrada por transferência não incorporados...")
         self.page.click('text="Entrada por Transferência Não Incorporado"')
-        self.page.wait_for_url('**/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam')
+        #self.page.wait_for_url('**/incorporar_bem/incorporar_bem_destinado_ao_orgao_lista.seam')
         self._log("Página de não incorporados acessada.")
 
     def navigate_to_dist_nao_recebido(self):

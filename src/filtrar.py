@@ -5,7 +5,7 @@ FORM_PREFIX = 'incorporar_bem_destinado_ao_orgao_form_pesq'
 
 locators = {
     # Seletor exato para o select do Órgão de Origem.
-    "org_origem_select": f'select[name="{FORM_PREFIX}:j_id424"]',
+    "org_origem_select": f'select[name="{FORM_PREFIX}:j_id425"]',
     
     # Seletor exato para o campo "Nº do Termo de Transferência".
     "n_termo_input": f'input[name="{FORM_PREFIX}:descricaobem"]', 
@@ -15,7 +15,7 @@ locators = {
     
     # Seletor exato para o botão "Pesquisar", usando o atributo 'name' e 'value'.
     # Este seletor é agora robusto.
-    "pesquisar_button": f'input[name="{FORM_PREFIX}:j_id437"][value="Pesquisar"]'
+    "pesquisar_button": f'input[name="{FORM_PREFIX}:j_id438"][value="Pesquisar"]'
 }
 
 def filtrar(page: Page, origem: str, ntermo: str, descricao: str, log_callback=None):

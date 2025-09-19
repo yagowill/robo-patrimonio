@@ -287,9 +287,11 @@ class PatrimonyApp(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Aviso", "Uma tarefa de automação já está em execução.")
             return
 
+        '''
         if not self.rps_value:
             QtWidgets.QMessageBox.warning(self, "Aviso", "Nenhum RP adicionado para incorporar.")
             return
+        '''
 
         self.append_log("--- Iniciando Tarefa de Incorporação ---")
         self._disable_ui()

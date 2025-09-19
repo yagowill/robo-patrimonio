@@ -37,7 +37,6 @@ def filtrar(page: Page, origem: str, ntermo: str, descricao: str, log_callback=N
 
         # Clicar no botão de pesquisa
         page.locator(locators["pesquisar_button"]).click()
-        page.wait_for_selector('#incorporar_bem_destinado_ao_orgao_form_lista\\:resultados')
         _log("Botão 'Pesquisar' clicado e resultados carregados.")
 
     except TimeoutError as e:

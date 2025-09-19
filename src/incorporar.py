@@ -33,6 +33,7 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
         # Initial filter
         try:
             filtrar(page, origem, ntermo, descricao, _log)
+            page.wait_for_load_state('networkidle')
         except Exception as e:
             _log(f"Erro na filtragem inicial: {e}")
             return # Stop if initial filter fails
@@ -67,6 +68,15 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
                     # Get description from the table before clicking
                     descricao_sistema = descricao_sistema_locator.text_content().strip()
                     _log(f"Descrição do sistema para o primeiro item encontrado: '{descricao_sistema}'")
+                    
+                    while descricao.strip() != descricao_sistema:
+                        _log(f"A descrição do primeiro item '{descricao_sistema}' não corresponde à descrição esperada '{descricao}'. Abortando incorporação.")
+                        filtrar(page, origem, ntermo, descricao, _log)
+                        page.wait_for_load_state('networkidle')
+                        selecionar_bem_link_locator = page.locator(incorporation_locators["select_bem_link"]).first
+                        descricao_sistema_locator = page.locator(incorporation_locators["description_text"]).first
+                        descricao_sistema = descricao_sistema_locator.text_content().strip()
+                        _log(f"Descrição do sistema para o primeiro item encontrado: '{descricao_sistema}'")
 
                     selecionar_bem_link_locator.click()
                     page.wait_for_selector(incorporation_locators["rp_input"]) # Wait for the RP input field to appear
@@ -105,7 +115,6 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
                         page.wait_for_load_state('networkidle')
                         # After "Imprimir depois", it usually returns to the list.
                         # Re-filter to ensure the list is fresh for the next iteration.
-                        filtrar(page, origem, ntermo, descricao, _log)
 
                     except TimeoutError: # Changed PlaywrightTimeoutError to TimeoutError
                         error_msg_elem = page.locator(incorporation_locators["error_message_span"])
@@ -149,4 +158,4 @@ def incorporar(page: Page, origem: str, ntermo: str, descricao: str, patrimonios
                     _log("Processo de incorporação pode estar em estado inconsistente. Recomenda-se reiniciar.")
                     break # Stop if we can't even get back to the list
 
-    _log(f"Processo de incorporação finalizado. {cadastrados}/{total} patrimônios incorporados.")
+    _log(f"Processo de incorporação finalizado. {cadastrados}/{total} patrimônios incorporados.")        

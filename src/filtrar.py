@@ -24,7 +24,7 @@ def filtrar(page: Page, origem: str, ntermo: str, descricao: str, log_callback=N
 
     try:
         # Esperamos que o seletor do dropdown esteja visível.
-        page.wait_for_selector(locators["org_origem_select"], state='visible') 
+        page.wait_for_selector(locators["org_origem_select"]) 
         _log("Elemento 'Órgão Origem' visível e pronto para interação.")
 
         # Selecionar o texto visível no dropdown

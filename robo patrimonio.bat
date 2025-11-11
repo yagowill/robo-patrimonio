@@ -1,0 +1,1 @@
+cd "C:\Users\yago.martins\Projetos\robo-patrimonio" & .venv\Scripts\activate & python main.py

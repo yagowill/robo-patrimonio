@@ -74,8 +74,8 @@ playwright install
 Crie um arquivo chamado `.env` na **raiz do projeto** (no mesmo diretório deste `README.md`). Adicione suas credenciais do SispatWeb neste arquivo:
 
 ```text
-SISPAT_USUARIO=seu_usuario_aqui
-SISPAT_SENHA=sua_senha_aqui
+GOVERNO_DIGITAL_USUARIO=seu_usuario_aqui
+GOVERNO_DIGITAL_SENHA=sua_senha_aqui
 ```
 
 **Importante:** Substitua `seu_usuario_aqui` e `sua_senha_aqui` pelas suas credenciais reais. Nunca compartilhe este arquivo! Ele já está configurado para ser ignorado pelo Git.
